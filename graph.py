@@ -112,7 +112,7 @@ def generar_grafo_aleatorio_con_pesos(num_nodos, probabilidad_conexion, max_coor
 
 
 # Ejemplo de uso
-graph = generar_grafo_aleatorio_con_pesos(10, 0.3, 8)
+graph = generar_grafo_aleatorio_con_pesos(10, 0.5, 8)
 print("Nodos del grafo:", graph.nodes())
 print("Aristas del grafo con pesos:", graph.edges(data=True))
 
@@ -123,9 +123,10 @@ camino_mas_corto = a_estrella(graph, 1, 10)
 print("Camino más corto:", camino_mas_corto)
 
 
-# Visualizar el grafo
-nx.draw(graph, with_labels=True)
+# Visualizar el grafo con etiquetas de peso redondeadas a 2 lugares decimales en las aristas
+pos = nx.spring_layout(graph)  # Posiciones de los nodos para la visualización
+nx.draw(graph, pos, with_labels=True)  # Dibuja el grafo con nodos etiquetados
+labels = {(u, v): f"{weight:.2f}" for u, v, weight in graph.edges(data='weight')}  # Redondea los pesos a 2 lugares decimales
+nx.draw_networkx_edge_labels(graph, pos, edge_labels=labels)  # Etiqueta las aristas con los pesos redondeados
 plt.show()
-
-
 
