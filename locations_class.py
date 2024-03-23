@@ -26,6 +26,17 @@ class PoliceDepartment(Location):
         return NotImplementedError
 
 
+class FireDepartment(Location):
+    def __init__(self, name, fire_fighters, trucks, water):
+        super().__init__(name)
+        self.fire_fighters = fire_fighters
+        self.trucks = trucks
+        self.water = water
+
+    def send_fire_truck(self, fire_fighters, truck, water, location):
+        return NotImplementedError
+
+
 class Hospital(Location):
     def __init__(self, name, ambulances, rooms, doctors):
         super().__init__(name)
@@ -37,7 +48,37 @@ class Hospital(Location):
         return NotImplementedError
 
 
+class Store(Location):
 
+    def __init__(self, name, stock, staff, cash, product_worth):
+        super().__init__(name)
+        self.staff = staff
+        self.cash = cash
+        self.product_w = product_worth
+        self.stock = stock
+
+    # self.is_open = False Poner esto en los estados del nodo ???????
+
+    def restock(self):
+        self.stock = 100
+
+    def call_police(self):
+        return NotImplementedError
+
+    def call_fire_f(self):
+        return NotImplementedError
+
+
+class GasStation(Location):
+
+    def __init__(self, name, gas, staff, cash):
+        super().__init__(name)
+        self.gas = gas
+        self.staff = staff
+        self.cash = cash
+
+    def restock_gas(self):
+        self.gas = 100
 
 
 hos = Hospital("Ramon", 5, 20, 8)
