@@ -1,5 +1,10 @@
+
+
+# NO  IMPORTAR LA CLASE AGENTE ---->> ERROR DE IMPORTACION CIRCULAR
+
+
 class Location:
-    def __init__(self, name: str):
+    def __init__(self, name: str, id: int):
         self.name = name
         self.connected_to = {}
         self.people_around = []
@@ -16,8 +21,8 @@ class Location:
 
 
 class PoliceDepartment(Location):
-    def __init__(self, name, officers, detectives, cars):
-        super().__init__(name)
+    def __init__(self, id, name, officers, detectives, cars):
+        super().__init__(name, id)
         self.current_officers = officers
         self.current_detectives = detectives
         self.current_cars = cars
@@ -27,8 +32,8 @@ class PoliceDepartment(Location):
 
 
 class FireDepartment(Location):
-    def __init__(self, name, fire_fighters, trucks, water):
-        super().__init__(name)
+    def __init__(self, id, name, fire_fighters, trucks, water):
+        super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
         self.water = water
@@ -38,8 +43,8 @@ class FireDepartment(Location):
 
 
 class Hospital(Location):
-    def __init__(self, name, ambulances, rooms, doctors):
-        super().__init__(name)
+    def __init__(self, id, name, ambulances, rooms, doctors):
+        super().__init__(name, id)
         self.ambulances = ambulances
         self.rooms = rooms
         self.doctors = doctors
@@ -50,8 +55,8 @@ class Hospital(Location):
 
 class Store(Location):
 
-    def __init__(self, name, stock, staff, cash, product_worth):
-        super().__init__(name)
+    def __init__(self, id, name, stock, staff, cash, product_worth):
+        super().__init__(name, id)
         self.staff = staff
         self.cash = cash
         self.product_w = product_worth
@@ -71,8 +76,8 @@ class Store(Location):
 
 class GasStation(Location):
 
-    def __init__(self, name, gas, staff, cash):
-        super().__init__(name)
+    def __init__(self, id, name, gas, staff, cash):
+        super().__init__(name, id)
         self.gas = gas
         self.staff = staff
         self.cash = cash
@@ -80,11 +85,10 @@ class GasStation(Location):
     def restock_gas(self):
         self.gas = 100
 
-
-hos = Hospital("Ramon", 5, 20, 8)
-ps = PoliceDepartment("PNR", 10, 5, 3)
-
-hos.add_row(ps, 10)
-
-print(ps.current_cars)
-print(hos.connected_to)
+# hos = Hospital("Ramon", 5, 20, 8)
+# ps = PoliceDepartment("PNR", 10, 5, 3)
+#
+# hos.add_row(ps, 10)
+#
+# print(ps.current_cars)
+# print(hos.connected_to)
