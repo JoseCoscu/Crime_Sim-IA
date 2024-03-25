@@ -1,6 +1,7 @@
-
-
 # NO  IMPORTAR LA CLASE AGENTE ---->> ERROR DE IMPORTACION CIRCULAR
+import networkx as nx
+import matplotlib.pyplot as plt
+import random as r
 
 
 class Location:
@@ -8,10 +9,13 @@ class Location:
         self.name = name
         self.connected_to = {}
         self.people_around = []
+        self.id = id
 
-    def add_row(self, place, dist):
-        self.connected_to[place.name] = dist
-        place.connected_to[self.name] = dist
+    def add_row(self, places, a, b):
+        for place in places:
+            dist = r.randint(a, b)
+            self.connected_to[place] = dist
+            place.connected_to[self] = dist
 
     def people_arrived(self, people):
         self.people_around.append(people)
@@ -64,6 +68,9 @@ class Store(Location):
 
     # self.is_open = False Poner esto en los estados del nodo ???????
 
+    def hire(self, people):
+        self.staff.append(people)
+
     def restock(self):
         self.stock = 100
 
@@ -74,16 +81,15 @@ class Store(Location):
         return NotImplementedError
 
 
-class GasStation(Location):
+class GasStation(Store):
 
     def __init__(self, id, name, gas, staff, cash):
-        super().__init__(name, id)
+        super().__init__(id, name, 0, staff, cash, 0)
         self.gas = gas
-        self.staff = staff
-        self.cash = cash
 
     def restock_gas(self):
         self.gas = 100
+
 
 # hos = Hospital("Ramon", 5, 20, 8)
 # ps = PoliceDepartment("PNR", 10, 5, 3)
@@ -92,3 +98,65 @@ class GasStation(Location):
 #
 # print(ps.current_cars)
 # print(hos.connected_to)
+
+
+class Hause(Location):
+    def __init__(self, id, name):
+        super().__init__(name, id)
+
+
+class Bank(Location):
+    def __init__(self, id, name):
+        super().__init__(name, id)
+
+
+class Casino(Location):
+    def __init__(self, id, name):
+        super().__init__(name, id)
+
+
+# Definir lugares
+locations = [
+    Location("Police Station", 1),
+    Location("Fire Department", 2),
+    Location("Hospital", 3),
+    # Agrega más lugares aquí según sea necesario
+]
+
+# Agregar conexiones entre lugares (ejemplo)
+locations[0].add_row([locations[1]],
+                     5, 10)  # Conecta la estación de policía con el departamento de bomberos con una distancia de 5
+locations[0].add_row([locations[2]], 8, 10)  # Conecta la estación de policía con el hospital con una distancia de 8
+# Agrega más conexiones según sea necesario
+
+# Crear un grafo
+G = nx.Graph()
+
+# Agregar nodos al grafo
+for location in locations:
+    G.add_node(location.name)
+
+# Agregar aristas al grafo
+for location in locations:
+    for connected_location, dist in location.connected_to.items():
+        G.add_edge(location.name, connected_location.name, weight=dist)
+
+# Diccionario para mapear colores a lugares
+color_map = {
+    "Police Station": "blue",
+    "Fire Department": "red",
+    "Hospital": "green",
+    # Agrega más lugares y colores según sea necesario
+}
+
+# Dibujar el grafo
+pos = nx.spring_layout(G)  # Calcula las posiciones de los nodos
+nx.draw(G, pos, with_labels=True, node_color=[color_map[node] for node in G.nodes], node_size=1000, font_size=10,
+        font_weight="bold")
+edge_labels = nx.get_edge_attributes(G, 'weight')
+nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)  # Agrega etiquetas a las aristas
+
+# Configuración del gráfico
+plt.title('Conexiones entre lugares')
+plt.axis('off')  # Desactiva los ejes
+plt.show()

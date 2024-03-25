@@ -9,9 +9,8 @@ class Agent:
         self.location = location
         self.location.people_arrived(self)
 
-
-# Para esta funcion ffaltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo i,plementado
-    # en la clase de grafos
+    # Para esta funcion ffaltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
+    # implementado en la clase de grafos
     def move_to(self, new_location: Location):
         self.location.people_left(self)
         self.location = new_location
