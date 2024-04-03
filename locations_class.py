@@ -115,48 +115,36 @@ class Casino(Location):
         super().__init__(name, id)
 
 
-# Definir lugares
-locations = [
-    Location("Police Station", 1),
-    Location("Fire Department", 2),
-    Location("Hospital", 3),
-    # Agrega más lugares aquí según sea necesario
-]
+def show_locations(locations):
+    # Crear un grafo
+    G = nx.Graph()
 
-# Agregar conexiones entre lugares (ejemplo)
-locations[0].add_row([locations[1]],
-                     5, 10)  # Conecta la estación de policía con el departamento de bomberos con una distancia de 5
-locations[0].add_row([locations[2]], 8, 10)  # Conecta la estación de policía con el hospital con una distancia de 8
-# Agrega más conexiones según sea necesario
+    # Agregar nodos al grafo
+    for location in locations:
+        G.add_node(location.name)
 
-# Crear un grafo
-G = nx.Graph()
+    # Agregar aristas al grafo
+    for location in locations:
+        for connected_location, dist in location.connected_to.items():
+            G.add_edge(location.name, connected_location.name, weight=dist)
 
-# Agregar nodos al grafo
-for location in locations:
-    G.add_node(location.name)
+    # Diccionario para mapear colores a lugares
+    color_map = {
+        "Police Station": "blue",
+        "Fire Department": "red",
+        "Hospital": "green",
+        "Hause": "yellow"
+        # Agrega más lugares y colores según sea necesario
+    }
 
-# Agregar aristas al grafo
-for location in locations:
-    for connected_location, dist in location.connected_to.items():
-        G.add_edge(location.name, connected_location.name, weight=dist)
+    # Dibujar el grafo
+    pos = nx.spring_layout(G)  # Calcula las posiciones de los nodos
+    nx.draw(G, pos, with_labels=True, node_size=500, font_size=10,
+            font_weight="bold")
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)  # Agrega etiquetas a las aristas
 
-# Diccionario para mapear colores a lugares
-color_map = {
-    "Police Station": "blue",
-    "Fire Department": "red",
-    "Hospital": "green",
-    # Agrega más lugares y colores según sea necesario
-}
-
-# Dibujar el grafo
-pos = nx.spring_layout(G)  # Calcula las posiciones de los nodos
-nx.draw(G, pos, with_labels=True, node_color=[color_map[node] for node in G.nodes], node_size=1000, font_size=10,
-        font_weight="bold")
-edge_labels = nx.get_edge_attributes(G, 'weight')
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)  # Agrega etiquetas a las aristas
-
-# Configuración del gráfico
-plt.title('Conexiones entre lugares')
-plt.axis('off')  # Desactiva los ejes
-plt.show()
+    # Configuración del gráfico
+    plt.title('Conexiones entre lugares')
+    plt.axis('off')  # Desactiva los ejes
+    plt.show()

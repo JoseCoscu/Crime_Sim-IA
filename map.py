@@ -8,19 +8,33 @@ stores = []
 gs_stations = []
 banks = []
 casinos = []
+all_locations = []
+
+## Creating Locations--------------------
 
 for i in range(1, 21):
     houses.append(Hause(i, "House_" + str(i)))
+    all_locations.append(houses[-1])
 
 for i in range(1, 5):
     stores.append(Store(i, "Store_" + str(i), 0, [], 0, 0))
     gs_stations.append(GasStation(i, "Gas_Station_" + str(i), 0, [], 0))
 
+    all_locations.append(stores[-1])
+    all_locations.append(gs_stations[-1])
+
 for i in range(1, 3):
     hospitals.append(Hospital(i, "Hospital_" + str(i), [], 0, []))
     banks.append(Bank(i, "Bank_" + str(i)))
-    casinos.append(Casino(i, "Bank_" + str(i)))
+    casinos.append(Casino(i, "Casino_" + str(i)))
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
+    fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
+
+    all_locations.append(hospitals[-1])
+    all_locations.append(banks[-1])
+    all_locations.append(casinos[-1])
+    all_locations.append(police_departments[-1])
+    all_locations.append(fire_departments[-1])
 
 ## Police Departments Connections----------------
 
@@ -35,4 +49,40 @@ hospitals[1].add_row([houses[13], houses[14], houses[16], gs_stations[2], stores
 
 ## Banks Connections -----------------------------------
 
-banks[0].add_row([houses[8], houses[11],houses[12],houses[14]])
+banks[0].add_row([houses[8], houses[11], houses[12], houses[14], stores[2]], 5, 10)
+banks[1].add_row([houses[16], houses[17], stores[3], fire_departments[1]], 5, 6)
+
+## Casinos Connecctions --------------------------------------------
+
+casinos[0].add_row([houses[15], houses[8], houses[9], houses[12], houses[14], houses[16], gs_stations[2],
+                    banks[1]], 7, 10)
+casinos[1].add_row(houses[17:20], 3, 5)
+
+## Fire Departments Connections ----------------------------------
+
+
+fire_departments[0].add_row([houses[10], houses[18], houses[0], stores[1], gs_stations[1]], 3, 6)
+fire_departments[1].add_row([houses[16], gs_stations[2]], 3, 8)
+
+## Stores Connections ---------------------------------------------
+
+stores[0].add_row([houses[0], houses[1], houses[6]], 5, 10)
+stores[1].add_row([houses[0], houses[8], houses[3], houses[10]], 5, 15)
+stores[2].add_row([houses[7], houses[5], houses[4], houses[13], gs_stations[0]], 10, 20)
+stores[3].add_row([houses[19], houses[17], houses[9], houses[16], gs_stations[3]], 8, 15)
+
+## Gas Stations Connections ---------------------------------------
+
+gs_stations[0].add_row(houses[1:8], 3, 8)
+gs_stations[0].add_row([houses[8]],5,9)
+gs_stations[1].add_row([houses[15],houses[18],houses[9],houses[8]], 2,10)
+gs_stations[2].add_row([houses[12],houses[14],houses[16]], 2,7)
+gs_stations[3].add_row([houses[16],houses[19],houses[15],houses[18]],3,10)
+
+## Houses Connections -----------------------------------------------
+
+houses[11].add_row([fire_departments[1],houses[7],stores[2]], 6,8)
+houses[2].add_row([houses[4]],3,4)
+
+# show_locations(all_locations)
+
