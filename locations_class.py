@@ -91,15 +91,6 @@ class GasStation(Store):
         self.gas = 100
 
 
-# hos = Hospital("Ramon", 5, 20, 8)
-# ps = PoliceDepartment("PNR", 10, 5, 3)
-#
-# hos.add_row(ps, 10)
-#
-# print(ps.current_cars)
-# print(hos.connected_to)
-
-
 class Hause(Location):
     def __init__(self, id, name):
         super().__init__(name, id)
@@ -128,19 +119,26 @@ def show_locations(locations):
         for connected_location, dist in location.connected_to.items():
             G.add_edge(location.name, connected_location.name, weight=dist)
 
-    # Diccionario para mapear colores a lugares
+    # Diccionario para mapear clases a colores
     color_map = {
-        "Police Station": "blue",
+        "PNR": "blue",
         "Fire Department": "red",
         "Hospital": "green",
-        "Hause": "yellow"
-        # Agrega más lugares y colores según sea necesario
+        "House": "cyan",
+        "Gas Station": "magenta",
+        "Bank": "gold",
+        "Store": 'purple',
+        'Casino': 'lightgreen'
     }
 
-    # Dibujar el grafo
+    # Obtener los colores de los nodos según la clase de lugar
+    node_colors = [color_map[location.split('_')[0]] if location.split('_')[0] in color_map else 'gray' for
+                   location in G.nodes]
+
+    # Dibujar el grafo con colores en los nodos
     pos = nx.spring_layout(G)  # Calcula las posiciones de los nodos
     nx.draw(G, pos, with_labels=True, node_size=500, font_size=10,
-            font_weight="bold")
+            font_weight="bold", node_color=node_colors)
     edge_labels = nx.get_edge_attributes(G, 'weight')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)  # Agrega etiquetas a las aristas
 

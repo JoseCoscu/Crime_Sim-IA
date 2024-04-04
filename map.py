@@ -18,7 +18,7 @@ for i in range(1, 21):
 
 for i in range(1, 5):
     stores.append(Store(i, "Store_" + str(i), 0, [], 0, 0))
-    gs_stations.append(GasStation(i, "Gas_Station_" + str(i), 0, [], 0))
+    gs_stations.append(GasStation(i, "Gas Station_" + str(i), 0, [], 0))
 
     all_locations.append(stores[-1])
     all_locations.append(gs_stations[-1])
@@ -84,5 +84,5 @@ gs_stations[3].add_row([houses[16],houses[19],houses[15],houses[18]],3,10)
 houses[11].add_row([fire_departments[1],houses[7],stores[2]], 6,8)
 houses[2].add_row([houses[4]],3,4)
 
-# show_locations(all_locations)
+show_locations(all_locations)
 
