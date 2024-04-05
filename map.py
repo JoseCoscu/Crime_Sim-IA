@@ -1,4 +1,6 @@
 from locations_class import *
+from agent_class import *
+import random as r
 
 police_departments = []
 hospitals = []
@@ -74,15 +76,41 @@ stores[3].add_row([houses[19], houses[17], houses[9], houses[16], gs_stations[3]
 ## Gas Stations Connections ---------------------------------------
 
 gs_stations[0].add_row(houses[1:8], 3, 8)
-gs_stations[0].add_row([houses[8]],5,9)
-gs_stations[1].add_row([houses[15],houses[18],houses[9],houses[8]], 2,10)
-gs_stations[2].add_row([houses[12],houses[14],houses[16]], 2,7)
-gs_stations[3].add_row([houses[16],houses[19],houses[15],houses[18]],3,10)
+gs_stations[0].add_row([houses[8]], 5, 9)
+gs_stations[1].add_row([houses[15], houses[18], houses[9], houses[8]], 2, 10)
+gs_stations[2].add_row([houses[12], houses[14], houses[16]], 2, 7)
+gs_stations[3].add_row([houses[16], houses[19], houses[15], houses[18]], 3, 10)
 
 ## Houses Connections -----------------------------------------------
 
-houses[11].add_row([fire_departments[1],houses[7],stores[2]], 6,8)
-houses[2].add_row([houses[4]],3,4)
+houses[11].add_row([fire_departments[1], houses[7], stores[2]], 6, 8)
+houses[2].add_row([houses[4]], 3, 4)
 
-show_locations(all_locations)
+## Creating Agents --------------------------------------------------
 
+all_agents = []
+criminals = []
+
+for i in range(0, 150):
+    place = all_locations[r.randint(0, len(all_locations) - 1)]
+    all_agents.append(Agent(i, 'Agent_' + str(i), place))
+    if i == 10:
+        all_agents.append(Criminal(i, 'Criminal_' + str(i), place, [], []))
+        criminals.append(all_agents[-1])
+
+criminals[0].try_robbery()
+
+
+# while (True):
+#     for i in all_agents:
+#         places = list(i.location.connected_to.keys())
+#         move = r.randint(0, 1)
+#         place = places[r.randint(0, len(places) - 1)]
+#         if move:
+#             i.move_to(place)
+#             print(f"{i.name} move to... {place.name}")
+#         else:
+#             print(f"{i.name} stayed in... {i.location.name}")
+#     break
+
+# show_locations(all_locations)

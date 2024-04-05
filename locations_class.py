@@ -11,6 +11,9 @@ class Location:
         self.people_around = []
         self.id = id
 
+    def get_adjacent_locations(self):
+        return list(self.connected_to.keys())
+
     def add_row(self, places, a, b):
         for place in places:
             dist = r.randint(a, b)
