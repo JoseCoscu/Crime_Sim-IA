@@ -15,20 +15,20 @@ all_locations = []
 ## Creating Locations--------------------
 
 for i in range(1, 21):
-    houses.append(Hause(i, "House_" + str(i)))
+    houses.append(House(i, "House_" + str(i)))
     all_locations.append(houses[-1])
 
 for i in range(1, 5):
-    stores.append(Store(i, "Store_" + str(i), 0, [], 0, 0))
-    gs_stations.append(GasStation(i, "Gas Station_" + str(i), 0, [], 0))
+    stores.append(Store(i, "Store_" + str(i), 0, [], 100, 1000))
+    gs_stations.append(GasStation(i, "Gas Station_" + str(i), 0, [], 100))
 
     all_locations.append(stores[-1])
     all_locations.append(gs_stations[-1])
 
 for i in range(1, 3):
     hospitals.append(Hospital(i, "Hospital_" + str(i), [], 0, []))
-    banks.append(Bank(i, "Bank_" + str(i)))
-    casinos.append(Casino(i, "Casino_" + str(i)))
+    banks.append(Bank(i, "Bank_" + str(i),[]))
+    casinos.append(Casino(i, "Casino_" + str(i), []))
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
 
@@ -90,6 +90,7 @@ houses[2].add_row([houses[4]], 3, 4)
 
 all_agents = []
 criminals = []
+citizens = []
 
 for i in range(0, 150):
     place = all_locations[r.randint(0, len(all_locations) - 1)]
@@ -97,9 +98,12 @@ for i in range(0, 150):
     if i == 10:
         all_agents.append(Criminal(i, 'Criminal_' + str(i), place, [], []))
         criminals.append(all_agents[-1])
+        all_agents.append(Citizen(i, 'Citizen_' + str(i), place))
+        citizens.append(all_agents[-1])
+
 
 criminals[0].try_robbery()
-
+citizens[0]()
 
 # while (True):
 #     for i in all_agents:

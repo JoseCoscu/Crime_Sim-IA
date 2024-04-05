@@ -5,11 +5,12 @@ import random as r
 
 
 class Location:
-    def __init__(self, name: str, id: int):
+    def __init__(self, name: str, id: int, cash = 100):
         self.name = name
         self.connected_to = {}
         self.people_around = []
         self.id = id
+        self.cash = cash
 
     def get_adjacent_locations(self):
         return list(self.connected_to.keys())
@@ -94,19 +95,23 @@ class GasStation(Store):
         self.gas = 100
 
 
-class Hause(Location):
+class House(Location):
     def __init__(self, id, name):
         super().__init__(name, id)
 
 
 class Bank(Location):
-    def __init__(self, id, name):
+    def __init__(self, id, name, staff):
         super().__init__(name, id)
+        self.cash = 100000
+        self.staff = staff
 
 
 class Casino(Location):
-    def __init__(self, id, name):
+    def __init__(self, id, name, staff):
         super().__init__(name, id)
+        self.cash = 1000000
+        self.staff = staff
 
 
 def show_locations(locations):
