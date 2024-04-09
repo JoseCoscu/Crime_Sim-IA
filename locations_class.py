@@ -26,6 +26,8 @@ class Location:
 
     def people_left(self, people):
         self.people_around.remove(people)
+    
+        
 
 
 class PoliceDepartment(Location):
@@ -35,18 +37,17 @@ class PoliceDepartment(Location):
         self.current_detectives = detectives
         self.current_cars = cars
 
-    def send_patrol(self, cars, place):
+    def send_patrol(self, cars, place,):
         return NotImplementedError
 
 
 class FireDepartment(Location):
-    def __init__(self, id, name, fire_fighters, trucks, water):
+    def __init__(self, id, name, fire_fighters, trucks):
         super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
-        self.water = water
 
-    def send_fire_truck(self, fire_fighters, truck, water, location):
+    def send_fire_truck(self, fire_fighters, truck, location):
         return NotImplementedError
 
 
@@ -58,31 +59,39 @@ class Hospital(Location):
         self.doctors = doctors
 
     def send_ambulance(self, place):
-        return NotImplementedError
+        if (self.ambulances > 0 & self.doctors > 2):
+            self.doctors -= 2
+            self.ambulances -= 1
+            
+            return True
+        else:    
+            return False
+    def back_ambulance(self):
+        self.doctors+=2
+        self.ambulances+=1
 
 
 class Store(Location):
 
-    def __init__(self, id, name, stock, staff, cash, product_worth):
+    def __init__(self, id, name, staff, cash, is_open = True):
         super().__init__(name, id)
         self.staff = staff
         self.cash = cash
-        self.product_w = product_worth
-        self.stock = stock
-
-    # self.is_open = False Poner esto en los estados del nodo ???????
+        self.is_open = is_open
 
     def hire(self, people):
         self.staff.append(people)
 
     def restock(self):
         self.stock = 100
+    
+    def buy(self,agent, amount):
+        if(agent.cash>=amount):
+            agent.cash-=amount
+            self.cash+=amount
 
-    def call_police(self):
-        return NotImplementedError
-
-    def call_fire_f(self):
-        return NotImplementedError
+    
+    
 
 
 class GasStation(Store):
@@ -103,15 +112,42 @@ class House(Location):
 class Bank(Location):
     def __init__(self, id, name, staff):
         super().__init__(name, id)
-        self.cash = 100000
+        self.cash = 1000
         self.staff = staff
+        self.acount={}
+
+    def deposit(self,agent, amount):
+        if(agent.id in self.acount):
+            self.acount[agent.id]+=amount
+        else:
+            self.acount[agent.id]=amount
+        agent.cash-=amount
+        self.cash+=amount
+
+    def extract(self,agent, amount):
+        if(agent.id in self.acount):
+            if(self.acount[agent.id]>=amount):
+                self.acount[agent.id]-=amount
+                agent.cash+=amount
+                self.cash-=amount
+
+        
 
 
 class Casino(Location):
     def __init__(self, id, name, staff):
         super().__init__(name, id)
-        self.cash = 1000000
+        self.cash = 10000
         self.staff = staff
+
+    def gamble(self, agent, amount):
+        if(agent.cash>=amount):
+            agent.cash-=amount
+            self.cash+=amount
+            if(r.randint(0,1)==1):
+                agent.cash+=amount*2
+                self.cash-=amount*2
+    
 
 
 def show_locations(locations):
