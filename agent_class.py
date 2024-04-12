@@ -5,7 +5,7 @@ from graph import a_estrella
 
 class Agent:
 
-    def __init__(self, id, name, location: Location, time, city, all_locations):
+    def __init__(self, id, name, location: Location, time, city, all_locations, house: Location):
         self.id = id
         self.name = name
         self.location = location
@@ -15,9 +15,13 @@ class Agent:
         self.time = time
         self.map = city
         self.all_locations = all_locations
+        self.home = house
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
     # implementado en la clase de grafos
+
+    def go_home(self):
+        self.move_to(self.home)
 
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
@@ -25,7 +29,7 @@ class Agent:
         path = self.get_places(route)
         for location in path:
             time = self.estimate_arrival_time(location)
-            if True: # Condicion seria si ya paso el tiempo
+            if True:  # Condicion seria si ya paso el tiempo
                 self.location.people_left(self)
                 self.location = location
                 self.location.people_arrived(self)
@@ -61,9 +65,22 @@ class Agent:
         return time
 
 
-class Officer(Agent):
-    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations):
-        super().__init__(id, name, location, time, city, all_locations)
+class Citizen(Agent):
+    def __call__(self, *args, **kwargs):
+        # self.move_to_random_location()
+        if 'rob' in self.location.get_state():
+            print("llam apolice")
+            self.location.state['rob'] = False
+            self.location.state['investigate'] = True
+        print(self.location.get_state())
+
+    def __init__(self, id, name, location, time, city, all_locations, house):
+        super().__init__(id, name, location, time, city, all_locations, house)
+
+
+class Officer(Citizen):
+    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations, house):
+        super().__init__(id, name, location, time, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -72,9 +89,9 @@ class Officer(Agent):
         return NotImplementedError
 
 
-class Detective(Agent):
-    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations):
-        super().__init__(id, name, location, time, city, all_locations)
+class Detective(Citizen):
+    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations, house):
+        super().__init__(id, name, location, time, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -87,8 +104,8 @@ class Criminal(Agent):
     def __call__(self, *args, **kwargs):
         self.try_robbery()
 
-    def __init__(self, id, name, location, weapons, vehicle, time, city, all_locations, mastery=1):
-        super().__init__(id, name, location, time, city, all_locations)
+    def __init__(self, id, name, location, weapons, vehicle, time, city, all_locations, house, mastery=1):
+        super().__init__(id, name, location, time, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -120,8 +137,11 @@ class Criminal(Agent):
     def try_robbery(self):
 
         chances = self.calculate_success_probability()
+        print(self.location.get_state())
 
-        if chances >= 0.4:
+        if chances >= 0.4 and 'calm' in self.location.get_state():
+            self.location.state['calm'] = False
+            self.location.state['rob'] = True
             is_success = r.random() * (1 + self.mastery / 10)
             if is_success < chances:
                 print(f"Robando {self.location.name}")
@@ -139,21 +159,16 @@ class Criminal(Agent):
             print(f'posbilidad de robo muy baja en {self.location.name}')
             self.move_to_random_location()
 
+        print(self.location.get_state())
+        self.move_to_random_location()
 
-class Employee(Agent):
+
+class Employee(Citizen):
     ## Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
 
-    def __init__(self, id, name, location, work_place: Location, time, city, all_locations):
-        super().__init__(id, name, location, time, city, all_locations)
+    def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
+        super().__init__(id, name, location, time, city, all_locations, house)
         self.hired_in = work_place
 
     def go_work(self):
         self.move_to(self.hired_in)
-
-
-class Citizen(Agent):
-    def __call__(self, *args, **kwargs):
-        self.move_to_random_location()
-
-    def __init__(self, id, name, location, time, city, all_locations):
-        super().__init__(id, name, location, time, city, all_locations)

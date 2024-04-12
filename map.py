@@ -99,16 +99,11 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 100):
-    place = all_locations[r.randint(0, len(all_locations) - 1)]
-    all_agents.append(Agent(id, 'Agent_' + str(i), place, timer, G, all_locations))
-    id += 1
-    all_agents.append(Criminal(id, 'Criminal_' + str(i), place, [], [], timer, G, all_locations))
-    criminals.append(all_agents[-1])
-    id += 1
-    all_agents.append(Citizen(id, 'Citizen_' + str(i), place, timer, G, all_locations))
-    citizens.append(all_agents[-1])
-    id += 1
+all_agents.append(Criminal(id, 'Criminal_' + str(id), houses[0], [], [], timer, G, all_locations, houses[1]))
+criminals.append(all_agents[-1])
+id += 1
+all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
+citizens.append(all_agents[-1])
 
 # while (True):
 #     for i in all_agents:
@@ -122,8 +117,9 @@ for i in range(0, 100):
 #         break
 
 
-all_agents[0].move_to(hospitals[0])
+criminals[0].try_robbery()
+citizens[0]()
 
-show_locations(G)
+# show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))

@@ -11,6 +11,14 @@ class Location:
         self.people_around = []
         self.id = id
         self.cash = cash
+        self.state = {'calm': True, 'rob': False, 'fire': False, 'is_open': False, 'investigate': False}
+
+    def get_state(self):
+        states = []
+        for i in self.state.keys():
+            if self.state[i]:
+                states.append(i)
+        return states
 
     def get_adjacent_locations(self):
         return list(self.connected_to.keys())
@@ -147,7 +155,6 @@ def create_map(locations):
 
 
 def show_locations(G):
-
     # Diccionario para mapear clases a colores
     color_map = {
         "PNR": "blue",
