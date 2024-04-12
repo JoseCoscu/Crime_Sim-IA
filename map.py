@@ -1,6 +1,8 @@
 from locations_class import *
 from agent_class import *
 import random as r
+from graph import *
+from timer import Time
 
 police_departments = []
 hospitals = []
@@ -11,6 +13,8 @@ gs_stations = []
 banks = []
 casinos = []
 all_locations = []
+
+timer = Time(0, 0, 0)
 
 ## Creating Locations--------------------
 
@@ -27,7 +31,7 @@ for i in range(1, 5):
 
 for i in range(1, 3):
     hospitals.append(Hospital(i, "Hospital_" + str(i), [], 0, []))
-    banks.append(Bank(i, "Bank_" + str(i),[]))
+    banks.append(Bank(i, "Bank_" + str(i), []))
     casinos.append(Casino(i, "Casino_" + str(i), []))
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
@@ -91,30 +95,35 @@ houses[2].add_row([houses[4]], 3, 4)
 all_agents = []
 criminals = []
 citizens = []
+id = 1
 
-for i in range(0, 150):
+G = create_map(all_locations)
+
+for i in range(0, 100):
     place = all_locations[r.randint(0, len(all_locations) - 1)]
-    all_agents.append(Agent(i, 'Agent_' + str(i), place))
-    if i == 10:
-        all_agents.append(Criminal(i, 'Criminal_' + str(i), place, [], []))
-        criminals.append(all_agents[-1])
-        all_agents.append(Citizen(i, 'Citizen_' + str(i), place))
-        citizens.append(all_agents[-1])
-
-
-criminals[0].try_robbery()
-citizens[0]()
+    all_agents.append(Agent(id, 'Agent_' + str(i), place, timer, G, all_locations))
+    id += 1
+    all_agents.append(Criminal(id, 'Criminal_' + str(i), place, [], [], timer, G, all_locations))
+    criminals.append(all_agents[-1])
+    id += 1
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), place, timer, G, all_locations))
+    citizens.append(all_agents[-1])
+    id += 1
 
 # while (True):
 #     for i in all_agents:
-#         places = list(i.location.connected_to.keys())
-#         move = r.randint(0, 1)
-#         place = places[r.randint(0, len(places) - 1)]
-#         if move:
-#             i.move_to(place)
-#             print(f"{i.name} move to... {place.name}")
-#         else:
-#             print(f"{i.name} stayed in... {i.location.name}")
-#     break
+#         if isinstance(i, Citizen):
+#             i()
+#         if isinstance(i,Criminal):
+#             i()
+#
+#     time += 1
+#     if time >= 10:
+#         break
 
-# show_locations(all_locations)
+
+all_agents[0].move_to(hospitals[0])
+
+show_locations(G)
+
+# print(all_agents[0].get_distance(route[1]))

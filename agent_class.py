@@ -1,34 +1,69 @@
 from locations_class import *
 import random as r
+from graph import a_estrella
 
 
 class Agent:
 
-    def __init__(self, id, name, location: Location):
+    def __init__(self, id, name, location: Location, time, city, all_locations):
         self.id = id
         self.name = name
         self.location = location
         self.location.people_arrived(self)
         self.people_on_sight = location.people_around
         self.cash = 100
+        self.time = time
+        self.map = city
+        self.all_locations = all_locations
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
     # implementado en la clase de grafos
+
     def move_to(self, new_location: Location):
-        self.location.people_left(self)
-        self.location = new_location
-        self.location.people_arrived(self)
+        route = a_estrella(self.map, self.location, new_location)
+        route.pop(0)
+        path = self.get_places(route)
+        for location in path:
+            time = self.estimate_arrival_time(location)
+            if True: # Condicion seria si ya paso el tiempo
+                self.location.people_left(self)
+                self.location = location
+                self.location.people_arrived(self)
+                print(f'{self.name} se movio hacia, {self.location.name}')
+
+    def get_places(self, route):
+        path = []
+        for i in route:
+            for k in self.all_locations:
+                if k.name == i:
+                    path.append(k)
+        return path
 
     def move_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
         self.move_to(new_location)
-        print(f'{self.name} se movio hacia {new_location.name}')
+        # print(f'{self.name} se movio hacia {new_location.name}')
+
+    def get_distance(self, place):
+        if place in self.location.connected_to:
+            return self.location.connected_to[place]
+
+    def estimate_arrival_time(self, place):
+        dist = self.get_distance(place)
+        time = 0
+        if dist <= 5:
+            time = r.randint(3, 5)
+        elif 5 < dist < 10:
+            time = r.randint(6, 8)
+        elif dist >= 10:
+            time = r.randint(8, 12)
+        return time
 
 
 class Officer(Agent):
-    def __init__(self, id, name, location, weapons, vehicle, mastery):
-        super().__init__(id, name, location)
+    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations):
+        super().__init__(id, name, location, time, city, all_locations)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -38,8 +73,8 @@ class Officer(Agent):
 
 
 class Detective(Agent):
-    def __init__(self, id, name, location, weapons, vehicle, mastery):
-        super().__init__(id, name, location)
+    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations):
+        super().__init__(id, name, location, time, city, all_locations)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -49,8 +84,11 @@ class Detective(Agent):
 
 
 class Criminal(Agent):
-    def __init__(self, id, name, location, weapons, vehicle, mastery=1):
-        super().__init__(id, name, location)
+    def __call__(self, *args, **kwargs):
+        self.try_robbery()
+
+    def __init__(self, id, name, location, weapons, vehicle, time, city, all_locations, mastery=1):
+        super().__init__(id, name, location, time, city, all_locations)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -91,7 +129,7 @@ class Criminal(Agent):
                 stolen_cash = self.location.cash / 10 * self.mastery
                 self.cash += stolen_cash
                 self.location.cash -= stolen_cash
-                print(f'Dinero robado {stolen_cash}')
+                print(f'Dinero robado {stolen_cash} por {self.name}')
 
                 self.mastery += 1
             else:
@@ -105,8 +143,8 @@ class Criminal(Agent):
 class Employee(Agent):
     ## Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
 
-    def __init__(self, id, name, location, work_place: Location):
-        super().__init__(id, name, location)
+    def __init__(self, id, name, location, work_place: Location, time, city, all_locations):
+        super().__init__(id, name, location, time, city, all_locations)
         self.hired_in = work_place
 
     def go_work(self):
@@ -117,5 +155,5 @@ class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         self.move_to_random_location()
 
-    def __init__(self, id, name, location):
-        super().__init__(id, name, location)
+    def __init__(self, id, name, location, time, city, all_locations):
+        super().__init__(id, name, location, time, city, all_locations)

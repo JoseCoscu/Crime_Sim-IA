@@ -5,7 +5,7 @@ import random as r
 
 
 class Location:
-    def __init__(self, name: str, id: int, cash = 100):
+    def __init__(self, name: str, id: int, cash=100):
         self.name = name
         self.connected_to = {}
         self.people_around = []
@@ -105,6 +105,7 @@ class Bank(Location):
         super().__init__(name, id)
         self.cash = 100000
         self.staff = staff
+        accounts = {'id': 100}
 
 
 class Casino(Location):
@@ -114,7 +115,7 @@ class Casino(Location):
         self.staff = staff
 
 
-def show_locations(locations):
+def create_map(locations):
     # Crear un grafo
     G = nx.Graph()
 
@@ -126,6 +127,10 @@ def show_locations(locations):
     for location in locations:
         for connected_location, dist in location.connected_to.items():
             G.add_edge(location.name, connected_location.name, weight=dist)
+
+    return G
+
+def show_locations(G):
 
     # Diccionario para mapear clases a colores
     color_map = {
@@ -154,3 +159,4 @@ def show_locations(locations):
     plt.title('Conexiones entre lugares')
     plt.axis('off')  # Desactiva los ejes
     plt.show()
+    return G
