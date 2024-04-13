@@ -3,6 +3,8 @@ from agent_class import *
 import random as r
 from graph import *
 from timer import Time
+import threading
+import time
 
 police_departments = []
 hospitals = []
@@ -99,11 +101,18 @@ id = 1
 
 G = create_map(all_locations)
 
-all_agents.append(Criminal(id, 'Criminal_' + str(id), houses[0], [], [], timer, G, all_locations, houses[1]))
-criminals.append(all_agents[-1])
-id += 1
-all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
-citizens.append(all_agents[-1])
+# all_agents.append(Criminal(id, 'Criminal_' + str(id), houses[0], [], [], timer, G, all_locations, houses[1]))
+# criminals.append(all_agents[-1])
+# id += 1
+# all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
+# citizens.append(all_agents[-1])
+# id += 1
+# all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
+# citizens.append(all_agents[-1])
+for i in range(0, 10):
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[0], timer, G, all_locations, houses[0]))
+    citizens.append(all_agents[-1])
+
 
 # while (True):
 #     for i in all_agents:
@@ -117,8 +126,21 @@ citizens.append(all_agents[-1])
 #         break
 
 
-criminals[0].try_robbery()
-citizens[0]()
+def ejecutar(i, start_time):
+    citizens[i]()
+    end_time = time.time()  # Registro del tiempo de finalización
+    elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
+    print(f'Tiempo transcurrido para i={i}: {elapsed_time} segundos')
+
+
+start_time = time.time()  # Registro del tiempo de inicio
+t = []
+for i in range(0, 5):
+    t.append(threading.Thread(target=ejecutar, args=(i, start_time)))
+    t[-1].start()
+
+# criminals[0].try_robbery()
+# citizens[0]()
 
 # show_locations(G)
 

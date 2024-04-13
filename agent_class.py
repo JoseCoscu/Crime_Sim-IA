@@ -1,10 +1,12 @@
+import time
+
 from locations_class import *
 import random as r
 from graph import a_estrella
+from timer import Time
 
 
 class Agent:
-
     def __init__(self, id, name, location: Location, time, city, all_locations, house: Location):
         self.id = id
         self.name = name
@@ -44,6 +46,8 @@ class Agent:
         return path
 
     def move_to_random_location(self):
+        s = r.randint(0, 2)
+        time.sleep(s)
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
         self.move_to(new_location)
@@ -67,12 +71,12 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        # self.move_to_random_location()
+        self.move_to_random_location()
+
         if 'rob' in self.location.get_state():
             print("llam apolice")
             self.location.state['rob'] = False
             self.location.state['investigate'] = True
-        print(self.location.get_state())
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
