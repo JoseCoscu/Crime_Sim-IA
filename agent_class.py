@@ -14,7 +14,7 @@ class Agent:
         self.location.people_arrived(self)
         self.people_on_sight = location.people_around
         self.cash = 100
-        self.time = time
+        self.time = 0
         self.map = city
         self.all_locations = all_locations
         self.home = house
@@ -39,7 +39,8 @@ class Agent:
                     self.location.people_left(self)
                     self.location = location
                     self.location.people_arrived(self)
-                    print(f'{self.name} se movio hacia, {self.location.name} y demoro {elapsed_time} segundos')
+                    self.time+=elapsed_time
+                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time} segundo')
                     break
 
     def get_places(self, route):
