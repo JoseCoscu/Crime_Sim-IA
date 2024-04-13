@@ -11,7 +11,7 @@ class Location:
         self.people_around = []
         self.id = id
         self.cash = cash
-        self.state = {'calm': True, 'rob': False, 'fire': False, 'is_open': False, 'investigate': False}
+        self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False}
 
     def get_state(self):
         states = []
@@ -42,6 +42,7 @@ class PoliceDepartment(Location):
         self.current_officers = officers
         self.current_detectives = detectives
         self.current_cars = cars
+        self.jail = []
 
     def send_patrol(self, cars, place):
         return NotImplementedError
