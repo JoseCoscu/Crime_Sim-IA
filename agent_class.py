@@ -3,7 +3,6 @@ import time
 from locations_class import *
 import random as r
 from graph import a_estrella
-import time
 
 
 class Agent:
@@ -40,8 +39,13 @@ class Agent:
                     self.location = location
                     self.location.people_arrived(self)
                     self.time+=elapsed_time
-                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time} segundo')
+                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time*10} segundo')
                     break
+            if("rob" in self.location.get_state()):
+                print("llam apolice")
+                self.location.state['wait_car'] =True
+                break
+            
 
     def get_places(self, route):
         path = []
@@ -64,9 +68,13 @@ class Agent:
                 self.location = new_location
                 self.location.people_arrived(self)
                 self.time += elapsed_time
-                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time} segundo')
+                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time*10} segundo')
                 break
-        # print(f'{self.name} se movio hacia {new_location.name}')
+        if("rob" in self.location.get_state()):
+                print("llam apolice")
+                self.location.state['wait_car'] =True
+
+
 
     def get_distance(self, place):
         if place in self.location.connected_to:
@@ -80,14 +88,11 @@ class Agent:
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         i = 0
-        while i <= 1:
-            self.move_to_random_location()
+        while i < 1:
+            loc=r.choice(self.all_locations)
+            print(loc.name,self.name)
+            self.move_to(loc)
             i += 1
-
-        if 'rob' in self.location.get_state():
-            print("llam apolice")
-            self.location.state['rob'] = False
-            self.location.state['investigate'] = True
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
