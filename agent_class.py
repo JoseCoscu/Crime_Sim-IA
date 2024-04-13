@@ -54,7 +54,18 @@ class Agent:
     def move_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
-        self.move_to(new_location)
+        start_time = time.time()
+        times = self.estimate_arrival_time(new_location)
+        while True:
+            end_time = time.time()  # Registro del tiempo de finalización
+            elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
+            if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
+                self.location.people_left(self)
+                self.location = new_location
+                self.location.people_arrived(self)
+                self.time += elapsed_time
+                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time} segundo')
+                break
         # print(f'{self.name} se movio hacia {new_location.name}')
 
     def get_distance(self, place):
@@ -63,13 +74,13 @@ class Agent:
 
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
-        return dist
+        return dist/10
 
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         i = 0
-        while i <= 2:
+        while i <= 1:
             self.move_to_random_location()
             i += 1
 

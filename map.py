@@ -134,7 +134,7 @@ def ejecutar(i, start_time):
 
 start_time = time.time()  # Registro del tiempo de inicio
 t = []
-for i in range(0, 5):
+for i in range(0, 2):
     t.append(threading.Thread(target=ejecutar, args=(i, start_time)))
     t[-1].start()
 
