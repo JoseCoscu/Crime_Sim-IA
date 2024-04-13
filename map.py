@@ -128,9 +128,8 @@ for i in range(0, 10):
 
 def ejecutar(i, start_time):
     citizens[i]()
-    end_time = time.time()  # Registro del tiempo de finalización
-    elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
-    print(f'Tiempo transcurrido para i={i}: {elapsed_time} segundos')
+
+
 
 
 start_time = time.time()  # Registro del tiempo de inicio
@@ -142,6 +141,6 @@ for i in range(0, 5):
 # criminals[0].try_robbery()
 # citizens[0]()
 
-# show_locations(G)
+show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))

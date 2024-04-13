@@ -3,7 +3,7 @@ import time
 from locations_class import *
 import random as r
 from graph import a_estrella
-from timer import Time
+import time
 
 
 class Agent:
@@ -30,12 +30,17 @@ class Agent:
         route.pop(0)
         path = self.get_places(route)
         for location in path:
-            time = self.estimate_arrival_time(location)
-            if True:  # Condicion seria si ya paso el tiempo
-                self.location.people_left(self)
-                self.location = location
-                self.location.people_arrived(self)
-                print(f'{self.name} se movio hacia, {self.location.name}')
+            start_time = time.time()
+            times = self.estimate_arrival_time(location)
+            while True:
+                end_time = time.time()  # Registro del tiempo de finalización
+                elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
+                if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
+                    self.location.people_left(self)
+                    self.location = location
+                    self.location.people_arrived(self)
+                    print(f'{self.name} se movio hacia, {self.location.name} y demoro {elapsed_time} segundos')
+                    break
 
     def get_places(self, route):
         path = []
@@ -46,8 +51,6 @@ class Agent:
         return path
 
     def move_to_random_location(self):
-        s = r.randint(0, 2)
-        time.sleep(s)
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
         self.move_to(new_location)
@@ -59,19 +62,15 @@ class Agent:
 
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
-        time = 0
-        if dist <= 5:
-            time = r.randint(3, 5)
-        elif 5 < dist < 10:
-            time = r.randint(6, 8)
-        elif dist >= 10:
-            time = r.randint(8, 12)
-        return time
+        return dist
 
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        self.move_to_random_location()
+        i = 0
+        while i <= 2:
+            self.move_to_random_location()
+            i += 1
 
         if 'rob' in self.location.get_state():
             print("llam apolice")
