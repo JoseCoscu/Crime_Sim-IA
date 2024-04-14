@@ -38,9 +38,6 @@ for i in range(1, 3):
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
 
-    
-
-
     all_locations.append(hospitals[-1])
     all_locations.append(banks[-1])
     all_locations.append(casinos[-1])
@@ -100,6 +97,7 @@ houses[2].add_row([houses[4]], 3, 4)
 all_agents = []
 criminals = []
 citizens = []
+officers = []
 id = 1
 
 G = create_map(all_locations)
@@ -112,10 +110,18 @@ G = create_map(all_locations)
 # id += 1
 # all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
 # citizens.append(all_agents[-1])
-for i in range(0, 10):
-    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[0], timer, G, all_locations, houses[0]))
+for i in range(0, 5):
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], timer, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
+    all_agents.append(
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time, G, all_locations, houses[0]))
+    officers.append(all_agents[-1])
+    officers[-1].state['work'] = True
+    all_agents.append(Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time, G, all_locations, houses[5], 10))
+    criminals.append(all_agents[-1])
 
+for i in officers:
+    police_departments[0].current_officers.append(i)
 
 # while (True):
 #     for i in all_agents:
@@ -128,18 +134,19 @@ for i in range(0, 10):
 #     if time >= 10:
 #         break
 
+print(houses[0].name)
 
-def ejecutar(i, start_time):
-    citizens[i]()
-
+# def ejecutar(i, start_time):
+criminals[0]()
+citizens[0]()
 
 
 
 start_time = time.time()  # Registro del tiempo de inicio
-t = []
-for i in range(0, 2):
-    t.append(threading.Thread(target=ejecutar, args=(i, start_time)))
-    t[-1].start()
+# t = []
+# for i in range(0, 5):
+#     t.append(threading.Thread(target=ejecutar, args=(i, start_time)))
+#     t[-1].start()
 
 # criminals[0].try_robbery()
 # citizens[0]()

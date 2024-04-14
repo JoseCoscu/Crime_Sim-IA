@@ -19,7 +19,7 @@ class Agent:
         self.home = house
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False,'rob_in_progress':False}
+                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False}
         self.history = []
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
@@ -59,7 +59,7 @@ class Agent:
                     print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
                     break
             if "rob" in self.location.get_state() and not (isinstance(self, Criminal)):
-                if isinstance(self,Officer or Detective):
+                if isinstance(self, Officer or Detective):
                     print('cojer al ladron')
                     break
 
@@ -68,7 +68,7 @@ class Agent:
                 station_pol.send_patrol(self.location)
                 self.location.state['calm'] = False
                 self.location.state['wait_car'] = True
-                print(station_pol.get_state())
+                # print(station_pol.get_state())
                 break
 
     def call_police(self):
@@ -102,7 +102,7 @@ class Agent:
                 self.time += elapsed_time
                 print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
                 break
-        if ("rob" in self.location.get_state()):
+        if "rob" in self.location.get_state():
             print("llam apolice")
             self.location.state['wait_car'] = True
 
@@ -125,12 +125,9 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        i = 0
-        while i < 1:
-            loc = r.choice(self.all_locations)
-            print(loc.name, self.name)
-            self.move_to(loc)
-            i += 1
+        for i in self.all_locations:
+            if i.name == 'House_1':
+                self.move_to(i)
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -143,15 +140,14 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
-    def call_of_dutty(self,location, criminal):
+    def call_of_dutty(self, location, criminal = None ):
         if 'work' in self.get_state():
             self.move_to(location)
             if criminal and criminal in location.people_around:
                 print(f'apresar a {criminal.name}')
-            people_in_rob=[x for x in location.people_around if 'rob_in_progress' in x.get_state()]
+            people_in_rob = [x for x in location.people_around if 'rob_in_progress' in x.get_state()]
             if people_in_rob:
                 print('apresar a los ladrones')
-            
 
 
 class Detective(Citizen):
@@ -215,6 +211,7 @@ class Criminal(Agent):
         print(self.location.get_state())
 
         if chances >= 0.4 and 'calm' in self.location.get_state():
+            self.state['rob_in_progress'] = True
             self.location.state['calm'] = False
             self.location.state['rob'] = True
             is_success = r.random() * (1 + self.mastery / 10)
@@ -232,7 +229,7 @@ class Criminal(Agent):
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}')
-            self.move_to_random_location()
+            # self.move_to_random_location()
 
         print(self.location.get_state())
-        self.move_to_random_location()
+        # self.move_to_random_location()
