@@ -38,7 +38,7 @@ for i in range(1, 3):
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
 
-    police_departments[0].state['rob'] = True
+    
 
 
     all_locations.append(hospitals[-1])

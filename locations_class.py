@@ -53,10 +53,12 @@ class PoliceDepartment(Location):
         self.jail = []
 
     def send_patrol(self, location):
+        self.state['send_car'] = True
         pol = r.randint(1, len(self.current_officers))
         for i in range(pol):
             pol_ran = r.choice(self.current_officers)
             pol_ran.set_state('work', 'go_to_rob')
+            pol_ran.call_of_duty(location)
 
 
 class FireDepartment(Location):

@@ -19,7 +19,7 @@ class Agent:
         self.home = house
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False}
+                      'aux_operation': False, 'go_to_rob': False,'rob_in_progress':False}
         self.history = []
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
@@ -59,9 +59,13 @@ class Agent:
                     print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
                     break
             if "rob" in self.location.get_state() and not (isinstance(self, Criminal)):
+                if isinstance(self,Officer or Detective):
+                    print('cojer al ladron')
+                    break
+
                 station_pol = self.call_police()
                 print("llam apolice")
-                station_pol.state['send_car'] = True
+                station_pol.send_patrol(self.location)
                 self.location.state['calm'] = False
                 self.location.state['wait_car'] = True
                 print(station_pol.get_state())
@@ -139,8 +143,15 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
-    def call_of_dutty(self):
-        return NotImplementedError
+    def call_of_dutty(self,location, criminal):
+        if 'work' in self.get_state():
+            self.move_to(location)
+            if criminal and criminal in location.people_around:
+                print(f'apresar a {criminal.name}')
+            people_in_rob=[x for x in location.people_around if 'rob_in_progress' in x.get_state()]
+            if people_in_rob:
+                print('apresar a los ladrones')
+            
 
 
 class Detective(Citizen):
