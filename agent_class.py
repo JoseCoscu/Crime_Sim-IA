@@ -59,11 +59,10 @@ class Agent:
                     break
             if("rob" in self.location.get_state() and not(isinstance(self,Criminal))):
                 station_pol=self.call_police()
-                print(station_pol.name)
+                print("llam apolice")
                 station_pol.state['send_car']=True     
                 self.location.state['calm'] =False
                 self.location.state['wait_car'] =True
-                print(self.location.get_state())
                 print(station_pol.get_state())
                 break
             
