@@ -57,7 +57,7 @@ class Agent:
                     self.time+=elapsed_time
                     print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time*10} segundo')
                     break
-            if("rob" in self.location.get_state()):
+            if("rob" in self.location.get_state() and not(isinstance(self,Criminal))):
                 station_pol=self.call_police()
                 print(station_pol.name)
                 station_pol.state['send_car']=True     
@@ -71,7 +71,6 @@ class Agent:
     def call_police(self):
         list_pol=[]
         min_dist=[]
-        
         for i in self.all_locations:
             if(isinstance(i,PoliceDepartment) and "enabled" in i.get_state()):
                 list_pol.append(i)
