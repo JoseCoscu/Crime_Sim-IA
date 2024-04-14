@@ -11,7 +11,13 @@ class Location:
         self.people_around = []
         self.id = id
         self.cash = cash
-        self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False}
+        self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False,"send_car":False,
+                      "wait_car":False,'enabled':True}
+    def set_state(self,*args):
+        for i in self.state :
+            self.state[i]=False
+        for i in args:
+            self.state[i]=True
 
     def get_state(self):
         states = []
@@ -43,9 +49,17 @@ class PoliceDepartment(Location):
         self.current_detectives = detectives
         self.current_cars = cars
         self.jail = []
+        
 
-    def send_patrol(self, cars, place):
-        return NotImplementedError
+    def send_patrol(self):
+        pol=r.randint(1,len(self.current_officers))
+        for i in range(pol):
+            pol_ran=r.choice(self.current_officers)
+            pol_ran.set_state('work','go_to_rob')
+            
+
+        
+        
 
 
 class FireDepartment(Location):

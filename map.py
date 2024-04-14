@@ -2,9 +2,9 @@ from locations_class import *
 from agent_class import *
 import random as r
 from graph import *
-from timer import Time
 import threading
 import time
+from timer import Time
 
 police_departments = []
 hospitals = []
@@ -37,6 +37,9 @@ for i in range(1, 3):
     casinos.append(Casino(i, "Casino_" + str(i), []))
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
+
+    police_departments[0].state['rob'] = True
+
 
     all_locations.append(hospitals[-1])
     all_locations.append(banks[-1])
