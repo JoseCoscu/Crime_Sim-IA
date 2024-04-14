@@ -17,10 +17,9 @@ class Agent:
         self.map = city
         self.all_locations = all_locations
         self.home = house
-        self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
-                      'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False}
-        self.history = []
+        self.state={'move_path':False,'work':False,'move_random':False,'sleep':False,'in_house':True,'stop_Location':False,
+                    'aux_operation':False,'go_to_rob':False}
+        self.history=[]
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
     # implementado en la clase de grafos
@@ -31,12 +30,12 @@ class Agent:
             if self.state[i]:
                 states.append(i)
         return states
-
-    def set_state(self, *args):
+    
+    def set_state(self,*args):
         for i in self.state:
-            self.state[i] = False
+            self.state[i]=False
         for i in args:
-            self.state[i] = True
+            self.state[i]=True
 
     def go_home(self):
         self.move_to(self.home)
@@ -55,37 +54,37 @@ class Agent:
                     self.location.people_left(self)
                     self.location = location
                     self.location.people_arrived(self)
-                    self.time += elapsed_time
-                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
+                    self.time+=elapsed_time
+                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time*10} segundo')
                     break
-            if "rob" in self.location.get_state():
-                station_pol = self.nearest_PNR()
-                # print(station_pol.name)
-                station_pol.state['send_car'] = True
-                self.location.state['calm'] = False
-                self.location.state['wait_car'] = True
-                print(self.location.get_state())
+            if("rob" in self.location.get_state() and not(isinstance(self,Criminal))):
+                station_pol=self.call_police()
+                print("llam apolice")
+                station_pol.state['send_car']=True     
+                self.location.state['calm'] =False
+                self.location.state['wait_car'] =True
                 print(station_pol.get_state())
                 break
+            
 
-
-## Busca la estacion mas cercana
-    def nearest_PNR(self):
-        list_pol = []
-        min_dist = []
-
+    def call_police(self):
+        list_pol=[]
+        min_dist=[]
         for i in self.all_locations:
-            if isinstance(i, PoliceDepartment) and "enabled" in i.get_state():
+            if(isinstance(i,PoliceDepartment) and "enabled" in i.get_state()):
                 list_pol.append(i)
         for i in list_pol:
-            path = a_estrella(self.map, self.location, i)
-            path = self.get_places(path)
-            count = 0
-            for j in range(0, len(path) - 1):
-                count += path[j].connected_to[path[j + 1]]
+            path=a_estrella(self.map,self.location,i)
+            path=self.get_places(path)
+            count=0
+            for j in range(0,len(path)-1):
+                count+=path[j].connected_to[path[j+1]]
             min_dist.append(count)
-        min_index = min_dist.index(min(min_dist))
+        min_index=min_dist.index(min(min_dist))
         return list_pol[min_index]
+                  
+                
+
 
     def move_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
@@ -100,11 +99,13 @@ class Agent:
                 self.location = new_location
                 self.location.people_arrived(self)
                 self.time += elapsed_time
-                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
+                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time*10} segundo')
                 break
-        if ("rob" in self.location.get_state()):
-            print("llam apolice")
-            self.location.state['wait_car'] = True
+        if("rob" in self.location.get_state()):
+                
+                print("llam apolice")
+                self.location.state['wait_car'] =True
+
 
     def get_places(self, route):
         path = []
@@ -120,15 +121,15 @@ class Agent:
 
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
-        return dist / 10
+        return dist/10
 
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         i = 0
         while i < 1:
-            loc = r.choice(self.all_locations)
-            print(loc.name, self.name)
+            loc=r.choice(self.all_locations)
+            print(loc.name,self.name)
             self.move_to(loc)
             i += 1
 
@@ -143,8 +144,9 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
-    def call_of_dutty(self):
-        return NotImplementedError
+    def call_of_dutty(self): 
+        return NotImplementedError 
+    
 
 
 class Detective(Citizen):
@@ -156,7 +158,6 @@ class Detective(Citizen):
     def investigate(self):
         return NotImplementedError
 
-
 class Employee(Citizen):
     ## Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
 
@@ -166,7 +167,6 @@ class Employee(Citizen):
 
     def go_work(self):
         self.move_to(self.hired_in)
-
 
 class Criminal(Agent):
     def __call__(self, *args, **kwargs):
@@ -229,3 +229,6 @@ class Criminal(Agent):
 
         print(self.location.get_state())
         self.move_to_random_location()
+
+
+
