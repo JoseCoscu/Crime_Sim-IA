@@ -42,8 +42,10 @@ class Location:
 
     def people_left(self, people):
         self.people_around.remove(people)
-    def collect():
+
+    def collect(self, agent):
         pass
+
 
 class PoliceDepartment(Location):
     def __init__(self, id, name, officers, detectives, cars):
@@ -61,11 +63,11 @@ class PoliceDepartment(Location):
             pol_ran = r.choice(self.current_officers)
             pol_ran.set_state('work', 'go_to_rob')
             pol_ran.call_of_dutty(location)
-    def collect(self,officer):
+
+    def collect(self, officer):
         officer.home.cash += 100
         return
 
-        
 
 class FireDepartment(Location):
     def __init__(self, id, name, fire_fighters, trucks, water):
@@ -76,10 +78,11 @@ class FireDepartment(Location):
 
     def send_fire_truck(self, fire_fighters, truck, water, location):
         return NotImplementedError
-    
-    def collect(self,fire_man):
+
+    def collect(self, fire_man):
         fire_man.home.cash += 100
         return
+
 
 class Hospital(Location):
     def __init__(self, id, name, ambulances, rooms, doctors):
@@ -87,13 +90,14 @@ class Hospital(Location):
         self.ambulances = ambulances
         self.rooms = rooms
         self.doctors = doctors
-##hacer sistema experto para hospital y cobrar_diagnosticar
-##hacer herencia de localidades publicas a hospitales polica y fire_dep
+
+    ##hacer sistema experto para hospital y cobrar_diagnosticar
+    ##hacer herencia de localidades publicas a hospitales polica y fire_dep
 
     def send_ambulance(self, place):
         return NotImplementedError
-    
-    def collect(self,doctor):
+
+    def collect(self, doctor):
         doctor.home.cash += 100
         return
 
@@ -110,11 +114,11 @@ class Store(Location):
     def hire(self, people):
         self.staff.append(people)
 
-
-    def collect(self,store_clerk):
+    def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
-        
+
+
 class GasStation(Store):
 
     def __init__(self, id, name, gas, staff, cash):
@@ -151,17 +155,19 @@ class Bank(Location):
                 self.acount[agent.id] -= amount
                 agent.cash += amount
                 self.cash -= amount
-    def collect(self,store_clerk):
+
+    def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
+
 
 class Casino(Location):
     def __init__(self, id, name, staff):
         super().__init__(name, id)
         self.cash = 1000000
         self.staff = staff
-    
-    def collect(self,store_clerk):
+
+    def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
 
