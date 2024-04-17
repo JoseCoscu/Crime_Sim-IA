@@ -63,9 +63,9 @@ class Agent:
         start_time = t.time()
         while True:
             elapse_time = t.time() - start_time
-            self.time += elapse_time
-            if elapse_time >= time:
+            if elapse_time >= time/10:
                 break
+        self.time += elapse_time
 
     def get_total_distance(self, route):
         dist = 0
@@ -105,11 +105,12 @@ class Agent:
                 end_time = t.time()  # Registro del tiempo de finalización
                 elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
                 if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
+                    previus_location = location
                     self.location.people_left(self)
                     self.location = location
                     self.location.people_arrived(self)
                     self.time += elapsed_time
-                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
+                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo desde {previus_location.name}')
                     break
             if "rob" in self.location.get_state() and not (isinstance(self, Criminal)):
                 if isinstance(self, Officer or Detective):
@@ -148,12 +149,13 @@ class Agent:
         while True:
             end_time = t.time()  # Registro del tiempo de finalización
             elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
+
             if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
                 self.location.people_left(self)
                 self.location = new_location
                 self.location.people_arrived(self)
                 self.time += elapsed_time
-                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo')
+                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundossss')
                 break
         if "rob" in self.location.get_state():
             print("llam apolice")
@@ -264,7 +266,7 @@ class Criminal(Agent):
         self.mastery = mastery
 
     def calculate_rob_time(self):
-        rob_time = 20
+        rob_time = 1
         ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
         if isinstance(self.location, House):
             rob_time *= 0.2  # Más fácil robar en una casa
@@ -317,10 +319,9 @@ class Criminal(Agent):
             while True:
                 end_time = t.time()
                 elapse_time = end_time - start_time
-                self.time += elapse_time
                 if elapse_time >= rob_time:
                     break
-
+            self.time += elapse_time
             if 'detenido' in self.get_state():
                 print(f'{self.name} ha sido apresado')
                 return
@@ -332,7 +333,7 @@ class Criminal(Agent):
                 print(f'Dinero robado {stolen_cash} por {self.name}')
                 self.mastery += 1
             else:
-                print(f'robo fallido en {self.location.name}')
+                print(f'robo fallido en {self.location.name} en {self.time * 10} segundossss')
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}')
