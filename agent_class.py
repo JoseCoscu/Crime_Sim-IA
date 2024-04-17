@@ -195,8 +195,25 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
+    def __call__(self, *args, **kwargs):
+        start_time = t.time()
+        while True:
+            elapsed_time = t.time() - start_time
+            aux_loc=None
+            if ['work','go_to_rob'] in self.get_state():
+                for i in self.all_locations:
+                    if 'wait_car' in i.get_state():
+                        aux_loc=i
+                        break
+            if(aux_loc):
+                self.time+=elapsed_time
+                self.call_of_dutty(self,aux_loc)
+
+
+
+
     def call_of_dutty(self, location, criminal=None):
-        if 'work' in self.get_state():
+        if 'work' in self.get_state():#quitar
             self.move_to(location)
             if criminal and criminal in location.people_around:
                 print(f'apresar a {criminal.name}')
