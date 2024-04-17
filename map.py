@@ -134,23 +134,28 @@ for i in officers:
 #     if time >= 10:
 #         break
 
-print(houses[0].name)
 
-# def ejecutar(i, start_time):
-criminals[0]()
-citizens[0]()
+def citizens_threads(i):
+    citizens[i]()
 
 
+def criminal_threads(i):
+    criminals[i]()
 
-start_time = time.time()  # Registro del tiempo de inicio
-# t = []
-# for i in range(0, 5):
-#     t.append(threading.Thread(target=ejecutar, args=(i, start_time)))
+
+t = []
+# for i in range(0, 1):
+#     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #     t[-1].start()
+
+threading.Thread(target=citizens_threads, args=(0,)).start()
+threading.Thread(target=criminal_threads, args=(0,)).start()
+
+
 
 # criminals[0].try_robbery()
 # citizens[0]()
 
-show_locations(G)
+# show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))

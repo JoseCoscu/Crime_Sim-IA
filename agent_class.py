@@ -1,5 +1,4 @@
-import time
-
+import time as t
 from locations_class import *
 import random as r
 from graph import a_estrella
@@ -19,11 +18,65 @@ class Agent:
         self.home = house
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False}
+                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False}
         self.history = []
+        self.locations = {'pd': [], 'hospitals': [], 'stores': [], 'gs_stations': [], 'casinos': [], 'fd': [],
+                          'banks': []}
+
+        self.get_locations(all_locations)
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
     # implementado en la clase de grafos
+
+    def get_locations(self, all_locations):
+        for i in all_locations:
+            if isinstance(i, PoliceDepartment):
+                self.locations['pd'].append(i)
+            if isinstance(i, Hospital):
+                self.locations['hospitals'].append(i)
+            if isinstance(i, Store):
+                self.locations['stores'].append(i)
+            if isinstance(i, GasStation):
+                self.locations['gs_stations'].append(i)
+            if isinstance(i, Casino):
+                self.locations['casinos'].append(i)
+            if isinstance(i, FireDepartment):
+                self.locations['fd'].append(i)
+            if isinstance(i, Bank):
+                self.locations['banks'].append(i)
+
+    def get_police_departments(self):
+        places = []
+        for i in self.all_locations:
+            if isinstance(i, PoliceDepartment):
+                places.append(i)
+
+    def go_bank(self, bank: Bank):
+        self.move_to(bank)
+        self.stay_in_place(2)
+        if self.cash > 100:
+            bank.deposit(self, self.cash - 100)
+        else:
+            bank.extract(self, self.cash - 100)
+
+    def stay_in_place(self, time):
+        start_time = t.time()
+        while True:
+            elapse_time = t.time() - start_time
+            self.time += elapse_time
+            if elapse_time >= time:
+                break
+
+    def get_total_distance(self, route):
+        dist = 0
+
+        for i, place in enumerate(route):
+            try:
+                next_place = route[i + 1]
+            except:
+                continue
+            dist += place.connected_to[next_place]
+        return dist
 
     def get_state(self):
         states = []
@@ -46,10 +99,10 @@ class Agent:
         route.pop(0)
         path = self.get_places(route)
         for location in path:
-            start_time = time.time()
+            start_time = t.time()
             times = self.estimate_arrival_time(location)
             while True:
-                end_time = time.time()  # Registro del tiempo de finalización
+                end_time = t.time()  # Registro del tiempo de finalización
                 elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
                 if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
                     self.location.people_left(self)
@@ -63,37 +116,37 @@ class Agent:
                     print('cojer al ladron')
                     break
 
-                station_pol = self.call_police()
-                print("llam apolice")
+                station_pol = self.nearest_place(self.locations['pd'][0])
+                print("Calling nearest Police Station")
                 station_pol.send_patrol(self.location)
                 self.location.state['calm'] = False
                 self.location.state['wait_car'] = True
                 # print(station_pol.get_state())
                 break
 
-    def call_police(self):
-        list_pol = []
-        min_dist = []
+    def nearest_place(self, place):
+        place_list = []
+        type_of = type(place)
+        nearest_place = None
+        dist = 999999
         for i in self.all_locations:
-            if isinstance(i, PoliceDepartment) and "enabled" in i.get_state():
-                list_pol.append(i)
-        for i in list_pol:
-            path = a_estrella(self.map, self.location, i)
-            path = self.get_places(path)
-            count = 0
-            for j in range(0, len(path) - 1):
-                count += path[j].connected_to[path[j + 1]]
-            min_dist.append(count)
-        min_index = min_dist.index(min(min_dist))
-        return list_pol[min_index]
+            if isinstance(i, type_of):
+                path = a_estrella(self.map, self.location, i)
+                path.pop(0)
+                route = self.get_places(path)
+                place_dist = self.get_total_distance(route)
+                if place_dist < dist:
+                    nearest_place = i
+                    dist = place_dist
+        return nearest_place
 
     def move_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
-        start_time = time.time()
+        start_time = t.time()
         times = self.estimate_arrival_time(new_location)
         while True:
-            end_time = time.time()  # Registro del tiempo de finalización
+            end_time = t.time()  # Registro del tiempo de finalización
             elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
             if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
                 self.location.people_left(self)
@@ -140,14 +193,36 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
-    def call_of_dutty(self, location, criminal = None ):
+    def call_of_dutty(self, location, criminal=None):
         if 'work' in self.get_state():
             self.move_to(location)
             if criminal and criminal in location.people_around:
                 print(f'apresar a {criminal.name}')
             people_in_rob = [x for x in location.people_around if 'rob_in_progress' in x.get_state()]
             if people_in_rob:
-                print('apresar a los ladrones')
+                for i in people_in_rob:
+                    chance = self.criminal_chance(i)
+                    if chance and not i.state['detenido']:
+
+                        i.state['detenido'] = True
+                        i.state['rob_in_progress'] = False
+                        print(f'{self.name} atrapo a {i.name}')
+                    elif not chance:
+                        print(f'{i.name} escapo')
+
+    def criminal_chance(self, criminal):
+        chance_c = criminal.mastery / 10
+        chance_o = self.mastery / 10
+        if chance_o >= chance_c:
+            is_success = r.random() - chance_c
+            if is_success >= 0.5:
+                return True
+            else:
+                return False
+        else:
+            is_success = r.random() - chance_c
+            if is_success >= 0.5:
+                return False
 
 
 class Detective(Citizen):
@@ -162,6 +237,8 @@ class Detective(Citizen):
 
 class Employee(Citizen):
     ## Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
+    def __call__(self, *args, **kwargs):
+        self.go_work()
 
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -169,6 +246,9 @@ class Employee(Citizen):
 
     def go_work(self):
         self.move_to(self.hired_in)
+        self.stay_in_place(8)
+        self.go_home()
+        self.stay_in_place(8)
 
 
 class Criminal(Agent):
@@ -180,6 +260,20 @@ class Criminal(Agent):
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
+
+    def calculate_rob_time(self):
+        rob_time = 20
+        ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
+        if isinstance(self.location, House):
+            rob_time *= 0.2  # Más fácil robar en una casa
+        elif isinstance(self.location, Store) or isinstance(self.location, GasStation):
+            rob_time *= 0.3  # Relativamente más fácil robar en una tienda
+        elif isinstance(self.location, PoliceDepartment):
+            rob_time *= 3  # Muy dificil robar en la estacion de Policia
+        elif isinstance(self.location, Bank) or isinstance(self.location, Casino):
+            rob_time *= 2  # Dificil de robar un banco o Casono
+
+        return rob_time
 
     def calculate_success_probability(self):
 
@@ -208,28 +302,36 @@ class Criminal(Agent):
     def try_robbery(self):
 
         chances = self.calculate_success_probability()
-        print(self.location.get_state())
-
+        rob_time = self.calculate_rob_time()
         if chances >= 0.4 and 'calm' in self.location.get_state():
+            start_time = t.time()
             self.state['rob_in_progress'] = True
             self.location.state['calm'] = False
             self.location.state['rob'] = True
             is_success = r.random() * (1 + self.mastery / 10)
-            if is_success < chances:
-                print(f"Robando {self.location.name}")
+            print(f"Robando {self.location.name}")
+            while True:
+                end_time = t.time()
+                elapse_time = end_time - start_time
+                self.time += elapse_time
+                if elapse_time >= rob_time:
+                    break
 
+            if 'detenido' in self.get_state():
+                print(f'{self.name} ha sido apresado')
+                return
+
+            if is_success < chances:
                 stolen_cash = self.location.cash / 10 * self.mastery
                 self.cash += stolen_cash
                 self.location.cash -= stolen_cash
                 print(f'Dinero robado {stolen_cash} por {self.name}')
-
                 self.mastery += 1
             else:
                 print(f'robo fallido en {self.location.name}')
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}')
-            # self.move_to_random_location()
+            self.move_to_random_location()
 
-        print(self.location.get_state())
-        # self.move_to_random_location()
+        self.move_to_random_location()

@@ -53,6 +53,7 @@ class PoliceDepartment(Location):
         self.jail = []
 
     def send_patrol(self, location):
+        ## Aki solo cambiar el estado de la estacion
         self.state['send_car'] = True
         pol = r.randint(1, len(self.current_officers))
         for i in range(pol):
@@ -130,7 +131,7 @@ class Bank(Location):
         self.acount = {}
 
     def deposit(self, agent, amount):
-        if (agent.id in self.acount):
+        if agent.id in self.acount:
             self.acount[agent.id] += amount
         else:
             self.acount[agent.id] = amount
@@ -138,8 +139,8 @@ class Bank(Location):
         self.cash += amount
 
     def extract(self, agent, amount):
-        if (agent.id in self.acount):
-            if (self.acount[agent.id] >= amount):
+        if agent.id in self.acount:
+            if self.acount[agent.id] >= amount:
                 self.acount[agent.id] -= amount
                 agent.cash += amount
                 self.cash -= amount
