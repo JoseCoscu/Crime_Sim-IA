@@ -111,7 +111,7 @@ G = create_map(all_locations)
 # id += 1
 # all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
 # citizens.append(all_agents[-1])
-for i in range(0, 5):
+for i in range(0, 2):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], timer, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
     all_agents.append(
@@ -151,18 +151,38 @@ def employee_threads(i):
     employee[i]()
 
 
+def officers_threads(i):
+    officers[i]()
+
+
 t = []
 # for i in range(0, 1):
 #     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #     t[-1].start()
 
-threading.Thread(target=citizens_threads, args=(0,)).start()
-threading.Thread(target=criminal_threads, args=(0,)).start()
-threading.Thread(target=employee_threads, args=(0,)).start()
+start_time = time.time()
+### hilos de citizens
+for i in range(0, len(citizens)):
+    threading.Thread(target=citizens_threads, args=(i,)).start()
+
+## hilos de criminales
+for i in range(0, len(criminals)):
+    threading.Thread(target=criminal_threads, args=(i,)).start()
+
+## hilos de empleados
+for i in range(0,len(employee)):
+    threading.Thread(target=employee_threads, args=(i,)).start()
+
+
+## hilos de oficiales
+for i in range(0, len(officers)):
+    threading.Thread(target=officers_threads, args=(i,)).start()
+
+
 
 # criminals[0].try_robbery()
 # citizens[0]()
 
-show_locations(G)
+# show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))

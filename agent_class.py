@@ -11,11 +11,11 @@ class Agent:
         self.location = location
         self.location.people_arrived(self)
         self.people_on_sight = location.people_around
-        self.cash = self.home.cash
         self.time = 0
         self.map = city
         self.all_locations = all_locations
         self.home = house
+        self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
                       'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False}
@@ -63,7 +63,7 @@ class Agent:
         start_time = t.time()
         while True:
             elapse_time = t.time() - start_time
-            if elapse_time >= time/10:
+            if elapse_time >= time / 10:
                 break
         self.time += elapse_time
 
@@ -110,7 +110,8 @@ class Agent:
                     self.location = location
                     self.location.people_arrived(self)
                     self.time += elapsed_time
-                    print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo desde {previus_location.name}')
+                    print(
+                        f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo desde {previus_location.name}')
                     break
             if "rob" in self.location.get_state() and not (isinstance(self, Criminal)):
                 if isinstance(self, Officer or Detective):
@@ -119,7 +120,7 @@ class Agent:
 
                 station_pol = self.nearest_place(self.locations['pd'][0])
                 print("Calling nearest Police Station")
-                station_pol.send_patrol(self.location)
+                station_pol.send_patrol()
                 self.location.state['calm'] = False
                 self.location.state['wait_car'] = True
                 # print(station_pol.get_state())
@@ -199,21 +200,18 @@ class Officer(Citizen):
         start_time = t.time()
         while True:
             elapsed_time = t.time() - start_time
-            aux_loc=None
-            if ['work','go_to_rob'] in self.get_state():
+            aux_loc = None
+            if 'go_to_rob' in self.get_state():
                 for i in self.all_locations:
                     if 'wait_car' in i.get_state():
-                        aux_loc=i
+                        aux_loc = i
                         break
-            if(aux_loc):
-                self.time+=elapsed_time
-                self.call_of_dutty(self,aux_loc)
-
-
-
+            if aux_loc:
+                self.time += elapsed_time
+                self.call_of_dutty(aux_loc)
 
     def call_of_dutty(self, location, criminal=None):
-        if 'work' in self.get_state():#quitar
+        if 'work' in self.get_state():  # quitar
             self.move_to(location)
             if criminal and criminal in location.people_around:
                 print(f'apresar a {criminal.name}')
@@ -225,23 +223,24 @@ class Officer(Citizen):
 
                         i.state['detenido'] = True
                         i.state['rob_in_progress'] = False
-                        print(f'{self.name} atrapo a {i.name}')
+                        print(f'{self.name} atrapo a {i.name} en {self.time*10} segundos')
                     elif not chance:
                         print(f'{i.name} escapo')
 
     def criminal_chance(self, criminal):
-        chance_c = criminal.mastery / 10
-        chance_o = self.mastery / 10
-        if chance_o >= chance_c:
-            is_success = r.random() - chance_c
-            if is_success >= 0.5:
-                return True
-            else:
-                return False
-        else:
-            is_success = r.random() - chance_c
-            if is_success >= 0.5:
-                return False
+        # chance_c = criminal.mastery / 10
+        # chance_o = self.mastery / 10
+        # if chance_o >= chance_c:
+        #     is_success = r.random() - chance_c
+        #     if is_success >= 0.5:
+        #         return True
+        #     else:
+        #         return False
+        # else:
+        #     is_success = r.random() - chance_c
+        #     if is_success >= 0.5:
+        #         return False
+        return True
 
 
 class Detective(Citizen):
@@ -283,7 +282,7 @@ class Criminal(Agent):
         self.mastery = mastery
 
     def calculate_rob_time(self):
-        rob_time = 1
+        rob_time = 200
         ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
         if isinstance(self.location, House):
             rob_time *= 0.2  # Más fácil robar en una casa
@@ -306,7 +305,7 @@ class Criminal(Agent):
 
         ## Aumentar o disminuir la probabilida del exito dependiendo del lugar
         if isinstance(self.location, House):
-            success_probability *= 1.5  # Más fácil robar en una casa
+            success_probability *= 1.5 # Más fácil robar en una casa
         elif isinstance(self.location, Store):
             success_probability *= 1.2  # Relativamente más fácil robar en una tienda
         elif isinstance(self.location, GasStation):
@@ -321,10 +320,10 @@ class Criminal(Agent):
         return min(success_probability, 1)  # Asegurarse de que la probabilidad no sea mayor que 1
 
     def try_robbery(self):
-        if self.location==self.home:
+        if self.location == self.home:
             self.move_to_random_location()
             return
-        chances = self.calculate_success_probability()
+        chances = self.calculate_success_probability()*1000
         rob_time = self.calculate_rob_time()
         if chances >= 0.4 and 'calm' in self.location.get_state():
             start_time = t.time()
@@ -332,7 +331,7 @@ class Criminal(Agent):
             self.location.state['calm'] = False
             self.location.state['rob'] = True
             is_success = r.random() * (1 + self.mastery / 10)
-            print(f"Robando {self.location.name}")
+            print(f"Robando {self.location.name} por {self.name}")
             while True:
                 end_time = t.time()
                 elapse_time = end_time - start_time
@@ -350,7 +349,7 @@ class Criminal(Agent):
                 print(f'Dinero robado {stolen_cash} por {self.name}')
                 self.mastery += 1
             else:
-                print(f'robo fallido en {self.location.name} en {self.time * 10} segundossss')
+                print(f'robo fallido en {self.location.name} en {self.time * 10} segundos')
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}')
