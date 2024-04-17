@@ -11,7 +11,7 @@ class Agent:
         self.location = location
         self.location.people_arrived(self)
         self.people_on_sight = location.people_around
-        self.cash = 100
+        self.cash = self.home.cash
         self.time = 0
         self.map = city
         self.all_locations = all_locations
@@ -243,12 +243,14 @@ class Employee(Citizen):
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.hired_in = work_place
+        self.hired_in.staff.append(self)
 
     def go_work(self):
+        self.stay_in_place(8)
         self.move_to(self.hired_in)
         self.stay_in_place(8)
+        self.location.collect(self)
         self.go_home()
-        self.stay_in_place(8)
 
 
 class Criminal(Agent):
@@ -300,7 +302,9 @@ class Criminal(Agent):
         return min(success_probability, 1)  # Asegurarse de que la probabilidad no sea mayor que 1
 
     def try_robbery(self):
-
+        if self.location==self.home:
+            self.move_to_random_location()
+            return
         chances = self.calculate_success_probability()
         rob_time = self.calculate_rob_time()
         if chances >= 0.4 and 'calm' in self.location.get_state():
