@@ -300,7 +300,9 @@ class Criminal(Agent):
         return min(success_probability, 1)  # Asegurarse de que la probabilidad no sea mayor que 1
 
     def try_robbery(self):
-
+        if self.location==self.home:
+            self.move_to_random_location()
+            return
         chances = self.calculate_success_probability()
         rob_time = self.calculate_rob_time()
         if chances >= 0.4 and 'calm' in self.location.get_state():
