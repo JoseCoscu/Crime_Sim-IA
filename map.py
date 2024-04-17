@@ -98,6 +98,7 @@ all_agents = []
 criminals = []
 citizens = []
 officers = []
+employee = []
 id = 1
 
 G = create_map(all_locations)
@@ -119,9 +120,12 @@ for i in range(0, 5):
     officers[-1].state['work'] = True
     all_agents.append(Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time, G, all_locations, houses[5], 10))
     criminals.append(all_agents[-1])
+    all_agents.append(Employee(id, 'Employee_' + str(i), houses[0], stores[0], 0, G, all_locations, houses[10]))
+    employee.append(all_agents[-1])
 
 for i in officers:
     police_departments[0].current_officers.append(i)
+
 
 # while (True):
 #     for i in all_agents:
@@ -143,6 +147,10 @@ def criminal_threads(i):
     criminals[i]()
 
 
+def employee_threads(i):
+    employee[i]()
+
+
 t = []
 # for i in range(0, 1):
 #     t.append(threading.Thread(target=citizens_threads, args=(i,)))
@@ -150,8 +158,7 @@ t = []
 
 threading.Thread(target=citizens_threads, args=(0,)).start()
 threading.Thread(target=criminal_threads, args=(0,)).start()
-
-
+threading.Thread(target=employee_threads, args=(0,)).start()
 
 # criminals[0].try_robbery()
 # citizens[0]()
