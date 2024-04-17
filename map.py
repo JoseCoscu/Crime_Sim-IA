@@ -163,6 +163,6 @@ threading.Thread(target=employee_threads, args=(0,)).start()
 # criminals[0].try_robbery()
 # citizens[0]()
 
-# show_locations(G)
+show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))
