@@ -16,20 +16,31 @@ class Agent:
         self.all_locations = all_locations
         self.home = house
         self.cash = self.home.cash
-        self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
+        self.state = {'move_path': False, 'work': False, 'move_random': True, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False}
+                      'aux_operation': False, 'go_to_rob': False, 'continue': False, 'rob_in_progress': False,
+                      'detenido': False, 'pending_action': False}
         self.history = []
         self.locations = {'pd': [], 'hospitals': [], 'stores': [], 'gs_stations': [], 'casinos': [], 'fd': [],
                           'banks': []}
+        self.next_location = None
 
         self.get_locations(all_locations)
 
-        self.time = 0
-
         # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
 
-    # implementado en la clase de grafos
+    def next_accion(self):
+        states = self.get_state()
+
+        if 'move_random' in states:
+            time, self.next_location = self.move_to_random_location()
+            self.state['move_random'] = False
+            self.state['pending_action'] = True
+            self.time = time
+        if 'continue' in states:
+            self.move_step(self.next_location)
+            self.state['continue'] = False
+            self.state['pending_action'] = False
 
     def get_locations(self, all_locations):
         for i in all_locations:
@@ -47,12 +58,6 @@ class Agent:
                 self.locations['fd'].append(i)
             if isinstance(i, Bank):
                 self.locations['banks'].append(i)
-
-    def get_police_departments(self):
-        places = []
-        for i in self.all_locations:
-            if isinstance(i, PoliceDepartment):
-                places.append(i)
 
     def go_bank(self, bank: Bank):
         self.move_to(bank)
@@ -96,6 +101,20 @@ class Agent:
 
     def go_home(self):
         self.move_to(self.home)
+
+    def get_route(self, new_location):
+        route = a_estrella(self.map, self.location, new_location)
+        route.pop(0)
+        path = self.get_places(route)
+        return path
+
+    def move_step(self, location):
+        previus_location = location
+        self.location.people_left(self)
+        self.location = location
+        self.location.people_arrived(self)
+        print(
+            f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo desde {previus_location.name}')
 
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
@@ -148,22 +167,9 @@ class Agent:
     def move_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
-        start_time = t.time()
         times = self.estimate_arrival_time(new_location)
-        while True:
-            end_time = t.time()  # Registro del tiempo de finalización
-            elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
-
-            if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
-                self.location.people_left(self)
-                self.location = new_location
-                self.location.people_arrived(self)
-                self.time += elapsed_time
-                print(f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundossss')
-                break
-        if "rob" in self.location.get_state():
-            print("llam apolice")
-            self.location.state['wait_car'] = True
+        print(times)
+        return times, new_location
 
     def get_places(self, route):
         path = []
@@ -184,9 +190,7 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        for i in self.all_locations:
-            if i.name == 'House_1':
-                self.move_to(i)
+        self.next_accion()
 
     def __init__(self, id, name, location, city, all_locations, house):
         super().__init__(id, name, location, city, all_locations, house)
