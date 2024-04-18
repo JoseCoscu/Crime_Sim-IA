@@ -339,7 +339,6 @@ class Criminal(Agent):
                 elapse_time = end_time - start_time
                 if elapse_time >= rob_time:
                     break
-            self.time += elapse_time
             if 'detenido' in self.get_state():
                 print(f'{self.name} ha sido apresado\n')
                 return
