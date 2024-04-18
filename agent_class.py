@@ -5,7 +5,7 @@ from graph import a_estrella
 
 
 class Agent:
-    def __init__(self, id, name, location: Location, time, city, all_locations, house: Location):
+    def __init__(self, id, name, location: Location, city, all_locations, house: Location):
         self.id = id
         self.name = name
         self.location = location
@@ -25,7 +25,10 @@ class Agent:
 
         self.get_locations(all_locations)
 
-    # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
+        self.time = 0
+
+        # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
+
     # implementado en la clase de grafos
 
     def get_locations(self, all_locations):
@@ -185,13 +188,13 @@ class Citizen(Agent):
             if i.name == 'House_1':
                 self.move_to(i)
 
-    def __init__(self, id, name, location, time, city, all_locations, house):
-        super().__init__(id, name, location, time, city, all_locations, house)
+    def __init__(self, id, name, location, city, all_locations, house):
+        super().__init__(id, name, location, city, all_locations, house)
 
 
 class Officer(Citizen):
-    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations, house):
-        super().__init__(id, name, location, time, city, all_locations, house)
+    def __init__(self, id, name, location, weapons, vehicle, mastery, city, all_locations, house):
+        super().__init__(id, name, location, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -223,7 +226,7 @@ class Officer(Citizen):
 
                         i.state['detenido'] = True
                         i.state['rob_in_progress'] = False
-                        print(f'{self.name} atrapo a {i.name} en {self.time*10} segundos')
+                        print(f'{self.name} atrapo a {i.name} en {self.time * 10} segundos')
                     elif not chance:
                         print(f'{i.name} escapo')
 
@@ -244,8 +247,8 @@ class Officer(Citizen):
 
 
 class Detective(Citizen):
-    def __init__(self, id, name, location, weapons, mastery, time, city, all_locations, house):
-        super().__init__(id, name, location, time, city, all_locations, house)
+    def __init__(self, id, name, location, weapons, mastery, city, all_locations, house):
+        super().__init__(id, name, location, city, all_locations, house)
         self.weapons = weapons
         self.mastery = mastery
 
@@ -258,8 +261,8 @@ class Employee(Citizen):
     def __call__(self, *args, **kwargs):
         self.go_work()
 
-    def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
-        super().__init__(id, name, location, time, city, all_locations, house)
+    def __init__(self, id, name, location, work_place: Location, city, all_locations, house):
+        super().__init__(id, name, location, city, all_locations, house)
         self.hired_in = work_place
         self.hired_in.staff.append(self)
 
@@ -275,8 +278,8 @@ class Criminal(Agent):
     def __call__(self, *args, **kwargs):
         self.try_robbery()
 
-    def __init__(self, id, name, location, weapons, vehicle, time, city, all_locations, house, mastery=1):
-        super().__init__(id, name, location, time, city, all_locations, house)
+    def __init__(self, id, name, location, weapons, vehicle, city, all_locations, house, mastery=1):
+        super().__init__(id, name, location, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
@@ -305,7 +308,7 @@ class Criminal(Agent):
 
         ## Aumentar o disminuir la probabilida del exito dependiendo del lugar
         if isinstance(self.location, House):
-            success_probability *= 1.5 # Más fácil robar en una casa
+            success_probability *= 1.5  # Más fácil robar en una casa
         elif isinstance(self.location, Store):
             success_probability *= 1.2  # Relativamente más fácil robar en una tienda
         elif isinstance(self.location, GasStation):
@@ -323,7 +326,7 @@ class Criminal(Agent):
         if self.location == self.home:
             self.move_to_random_location()
             return
-        chances = self.calculate_success_probability()*1000
+        chances = self.calculate_success_probability() * 1000
         rob_time = self.calculate_rob_time()
         if chances >= 0.4 and 'calm' in self.location.get_state():
             start_time = t.time()

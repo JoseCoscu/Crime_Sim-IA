@@ -18,6 +18,8 @@ all_locations = []
 
 timer = Time(0, 0, 0)
 
+## region
+
 ## Creating Locations--------------------
 
 for i in range(1, 21):
@@ -91,6 +93,8 @@ gs_stations[3].add_row([houses[16], houses[19], houses[15], houses[18]], 3, 10)
 
 houses[11].add_row([fire_departments[1], houses[7], stores[2]], 6, 8)
 houses[2].add_row([houses[4]], 3, 4)
+
+#endregion
 
 ## Creating Agents --------------------------------------------------
 
