@@ -4,7 +4,7 @@ import random as r
 from graph import *
 import threading
 import time
-from timer import Time
+from timer import TimeMeter, time_updater
 
 police_departments = []
 hospitals = []
@@ -15,9 +15,11 @@ gs_stations = []
 banks = []
 casinos = []
 all_locations = []
+time_meter = TimeMeter()
 
-timer = Time(0, 0, 0)
 
+
+# region Creacion de locaclizaciones
 ## Creating Locations--------------------
 
 for i in range(1, 21):
@@ -91,6 +93,9 @@ gs_stations[3].add_row([houses[16], houses[19], houses[15], houses[18]], 3, 10)
 
 houses[11].add_row([fire_departments[1], houses[7], stores[2]], 6, 8)
 houses[2].add_row([houses[4]], 3, 4)
+# endregion
+
+
 
 ## Creating Agents --------------------------------------------------
 
@@ -112,15 +117,15 @@ G = create_map(all_locations)
 # all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
 # citizens.append(all_agents[-1])
 for i in range(0, 2):
-    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], timer, G, all_locations, houses[0]))
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
     all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time, G, all_locations, houses[0]))
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
-    all_agents.append(Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time, G, all_locations, houses[5], 10))
+    all_agents.append(Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
     criminals.append(all_agents[-1])
-    all_agents.append(Employee(id, 'Employee_' + str(i), houses[0], stores[0], 0, G, all_locations, houses[10]))
+    all_agents.append(Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
     employee.append(all_agents[-1])
 
 for i in officers:
@@ -141,14 +146,17 @@ for i in officers:
 
 def citizens_threads(i):
     citizens[i]()
+    print(f'tiempo de {citizens[i].name} es {citizens[i].time.get_global_time()}')
 
 
 def criminal_threads(i):
     criminals[i]()
+    print(f'tiempo de {criminals[i].name} es {criminals[i].time.get_global_time()}')
 
 
 def employee_threads(i):
     employee[i]()
+    print(f'tiempo de {employee[i].name} es {employee[i].time.get_global_time()}')
 
 
 def officers_threads(i):
@@ -160,23 +168,29 @@ t = []
 #     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #     t[-1].start()
 
-start_time = time.time()
+# Creamos un hilo para actualizar el tiempo
+time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
+time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
+time_updater_thread.start()
+
+# hilos de oficiales
+for i in range(0, len(officers)):
+    t.append(threading.Thread(target=officers_threads, args=(i,)))
+
 ### hilos de citizens
 for i in range(0, len(citizens)):
-    threading.Thread(target=citizens_threads, args=(i,)).start()
+    t.append(threading.Thread(target=citizens_threads, args=(i,)))
 
 ## hilos de criminales
 for i in range(0, len(criminals)):
-    threading.Thread(target=criminal_threads, args=(i,)).start()
+    t.append(threading.Thread(target=criminal_threads, args=(i,)))
 
 ## hilos de empleados
-for i in range(0,len(employee)):
-    threading.Thread(target=employee_threads, args=(i,)).start()
+for i in range(0, len(employee)):
+    t.append(threading.Thread(target=employee_threads, args=(i,)))
 
-
-## hilos de oficiales
-for i in range(0, len(officers)):
-    threading.Thread(target=officers_threads, args=(i,)).start()
+for i in t:
+    i.start()
 
 
 
