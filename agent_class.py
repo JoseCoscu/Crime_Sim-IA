@@ -38,7 +38,7 @@ class Agent:
             
     def execute_action (self,global_time):
         if 'move_random' in self.get_state():
-            self.move_step(self.next_location,global_time)
+            self.move_step(global_time)
             self.state['pending_action'] = False
 
 
@@ -108,13 +108,12 @@ class Agent:
         path = self.get_places(route)
         return path
 
-    def move_step(self, location,global_time):
-        previus_location = location
-        self.location.people_left(self)
-        self.location = location
-        self.location.people_arrived(self)
+    def move_step(self,global_time):
         print(
-            f'{self.name} se movio hacia, {self.location.name} y en el {global_time } segundo desde {previus_location.name}')
+            f'{self.name} se movio de {self.location.name}  hacia {self.next_location.name}  en el segundo {global_time }   ')
+        self.location.people_left(self)
+        self.location =self.next_location 
+        self.location.people_arrived(self)
 
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
