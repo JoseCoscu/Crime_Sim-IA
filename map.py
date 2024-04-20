@@ -163,23 +163,27 @@ init_agents(citizens)
 
 time = 0
 
-while time <= 100:
-    agent = get_next_agent(citizens)
-    agent.state['continue'] = True
-    agent()
-    agent.state['continue'] = False
-    time += agent.time
+while time <= 10:
+    agent = get_next_agent(citizens)#agent con menor tiempo
+    #printear tiempos
+    list_time1=[]
     for citizen in citizens:
-        citizen.time -= agent.time
+        list_time1.append(citizen.time)
+    print(list_time1)
+
+    time += agent.time
+    aux_temp=agent.time
+
+    agent.execute_action(time)#ejecutar accion
+    for citizen in citizens:
+        citizen.time -=aux_temp
+
+    #printear tiempos
+    list_time2=[]
+    for citizen in citizens:
+        list_time2.append(citizen.time)
+    print(list_time2)
+    agent()
 
 
-def criminal_threads(i):
-    criminals[i]()
 
-
-def employee_threads(i):
-    employee[i]()
-
-
-def officers_threads(i):
-    officers[i]()

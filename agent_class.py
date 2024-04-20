@@ -29,18 +29,18 @@ class Agent:
 
         # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
 
-    def next_accion(self):
+    def next_action(self):
         states = self.get_state()
 
         if 'move_random' in states:
-            time, self.next_location = self.move_to_random_location()
-            self.state['move_random'] = False
+            self.time, self.next_location = self.search_to_random_location()
             self.state['pending_action'] = True
-            self.time = time
-        if 'continue' in states:
-            self.move_step(self.next_location)
-            self.state['continue'] = False
+            
+    def execute_action (self,global_time):
+        if 'move_random' in self.get_state():
+            self.move_step(self.next_location,global_time)
             self.state['pending_action'] = False
+
 
     def get_locations(self, all_locations):
         for i in all_locations:
@@ -108,13 +108,13 @@ class Agent:
         path = self.get_places(route)
         return path
 
-    def move_step(self, location):
+    def move_step(self, location,global_time):
         previus_location = location
         self.location.people_left(self)
         self.location = location
         self.location.people_arrived(self)
         print(
-            f'{self.name} se movio hacia, {self.location.name} y en el {self.time * 10} segundo desde {previus_location.name}')
+            f'{self.name} se movio hacia, {self.location.name} y en el {global_time } segundo desde {previus_location.name}')
 
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
@@ -164,12 +164,12 @@ class Agent:
                     dist = place_dist
         return nearest_place
 
-    def move_to_random_location(self):
+    def search_to_random_location(self):
         adjacent_locations = self.location.get_adjacent_locations()
         new_location = r.choice(adjacent_locations)
         times = self.estimate_arrival_time(new_location)
-        print(times)
-        return times, new_location
+        print(times*10)
+        return times*10, new_location
 
     def get_places(self, route):
         path = []
@@ -190,7 +190,7 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        self.next_accion()
+        self.next_action()
 
     def __init__(self, id, name, location, city, all_locations, house):
         super().__init__(id, name, location, city, all_locations, house)
@@ -328,7 +328,7 @@ class Criminal(Agent):
 
     def try_robbery(self):
         if self.location == self.home:
-            self.move_to_random_location()
+            self.search_to_random_location()
             return
         chances = self.calculate_success_probability() * 1000
         rob_time = self.calculate_rob_time()
@@ -360,6 +360,6 @@ class Criminal(Agent):
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}')
-            self.move_to_random_location()
+            self.search_to_random_location()
 
-        self.move_to_random_location()
+        self.search_to_random_location()
