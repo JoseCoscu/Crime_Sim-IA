@@ -4,10 +4,6 @@ import random as r
 from graph import a_estrella
 from timer import TimeMeter
 
-heridas = ['laceracion', 'quemadura', 'punzon', 'golpe', 'nunguna']
-
-enfermedades = ['virus', 'inflamacio', 'mental', 'ninguna']
-
 
 class Agent:
     def __init__(self, id, name, location: Location, time: TimeMeter, city, all_locations, house: Location):
@@ -19,12 +15,15 @@ class Agent:
         self.time = 0
         self.map = city
         self.all_locations = all_locations
+        self.sick = {'virus': True, 'inflamacio': False, 'mental': False, 'ninguna': True}
+        self.injuries = {'laceracion': True, 'quemadura': False, 'punzon': False, 'golpe': False, 'nunguna': False}
         self.home = house
         self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False, 'sick': True,
-                      'injure': False}
+                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False,
+                      'sick': False,
+                      'injure': True}
         self.history = []
         self.locations = {'pd': [], 'hospitals': [], 'stores': [], 'gs_stations': [], 'casinos': [], 'fd': [],
                           'banks': []}
@@ -34,6 +33,16 @@ class Agent:
 
     # Para esta funcion faltaria calcular el tiempo que demora dicho movimiento de un lugar a otro basandose en lo
     # implementado en la clase de grafos
+
+    def get_injuries(self):
+        for i in self.injuries.keys():
+            if self.injuries[i]:
+                return i
+
+    def get_sick(self):
+        for i in self.sick.keys():
+            if self.sick[i]:
+                return i
 
     def get_locations(self, all_locations):
         for i in all_locations:
@@ -51,6 +60,12 @@ class Agent:
                 self.locations['fd'].append(i)
             if isinstance(i, Bank):
                 self.locations['banks'].append(i)
+
+    def go_hosp(self):
+        if 'injure' in self.get_state():
+            hospital = self.nearest_place(self.locations['hospitals'][0])
+            self.move_to(hospital)
+            hospital.diagnostic(self.get_injuries(), self.get_sick())
 
     def get_police_departments(self):
         places = []
@@ -132,7 +147,6 @@ class Agent:
                 break
 
     def nearest_place(self, place):
-        place_list = []
         type_of = type(place)
         nearest_place = None
         dist = 999999
@@ -186,9 +200,7 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        for i in self.all_locations:
-            if i.name == 'House_1':
-                self.move_to(i)
+        self.go_hosp()
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)

@@ -2,6 +2,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 import random as r
+import hospital_exp as h
 
 
 class Location:
@@ -89,6 +90,9 @@ class Hospital(Location):
         self.ambulances = ambulances
         self.rooms = rooms
         self.doctors = doctors
+
+    def diagnostic(self, herida, enfermedad):
+        h.diag_hosp(herida, enfermedad)
 
     ##hacer sistema experto para hospital y cobrar_diagnosticar
     ##hacer herencia de localidades publicas a hospitales polica y fire_dep

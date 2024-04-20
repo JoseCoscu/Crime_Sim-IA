@@ -116,16 +116,16 @@ G = create_map(all_locations)
 for i in range(0, 2):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
-    all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
-    officers.append(all_agents[-1])
-    officers[-1].state['work'] = True
-    all_agents.append(
-        Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
-    criminals.append(all_agents[-1])
-    all_agents.append(
-        Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
-    employee.append(all_agents[-1])
+    # all_agents.append(
+    #     Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
+    # officers.append(all_agents[-1])
+    # officers[-1].state['work'] = True
+    # all_agents.append(
+    #     Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
+    # criminals.append(all_agents[-1])
+    # all_agents.append(
+    #     Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
+    # employee.append(all_agents[-1])
 
 for i in officers:
     police_departments[0].current_officers.append(i)
@@ -163,23 +163,23 @@ def officers_threads(i):
 
 
 #
-# t = []
+t = []
 # # for i in range(0, 1):
 # #     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 # #     t[-1].start()
 #
-# # Creamos un hilo para actualizar el tiempo
-# time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
-# time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
-# time_updater_thread.start()
+# Creamos un hilo para actualizar el tiempo
+time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
+time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
+time_updater_thread.start()
 #
 # # hilos de oficiales
 # for i in range(0, len(officers)):
 #     t.append(threading.Thread(target=officers_threads, args=(i,)))
 #
 # ### hilos de citizens
-# for i in range(0, len(citizens)):
-#     t.append(threading.Thread(target=citizens_threads, args=(i,)))
+for i in range(0, len(citizens)):
+    t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #
 # ## hilos de criminales
 # for i in range(0, len(criminals)):
@@ -189,13 +189,13 @@ def officers_threads(i):
 # for i in range(0, len(employee)):
 #     t.append(threading.Thread(target=employee_threads, args=(i,)))
 #
-# for i in t:
-#     i.start()
+for i in t:
+    i.start()
 
 
 # criminals[0].try_robbery()
 # citizens[0]()
 
-show_locations(G)
+# show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))

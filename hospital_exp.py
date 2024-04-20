@@ -132,5 +132,3 @@ def diag_hosp(herida,enfermedad):
     identificador.reset()
     identificador.declare(Diagnostic(herida=herida,enfermedad=enfermedad))
     identificador.run()
-
-diag_hosp('laceracion','virus')
