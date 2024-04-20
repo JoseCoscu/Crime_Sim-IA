@@ -113,14 +113,6 @@ id = 1
 
 G = create_map(all_locations)
 
-# all_agents.append(Criminal(id, 'Criminal_' + str(id), houses[0], [], [], timer, G, all_locations, houses[1]))
-# criminals.append(all_agents[-1])
-# id += 1
-# all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
-# citizens.append(all_agents[-1])
-# id += 1
-# all_agents.append(Citizen(id, 'Citizen_' + str(id), houses[0], timer, G, all_locations, houses[0]))
-# citizens.append(all_agents[-1])
 for i in range(0, 2):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
