@@ -19,7 +19,7 @@ class TimeMeter:
 
 def time_updater(time_meter):
     while True:
-        time.sleep(0.01)  # Espera 1 segundo
+        time.sleep(0.2)  # Espera 1 segundo
         time_meter.increment_global_time(1)  # Incrementa el tiempo global en 1 segundo
 
 
@@ -37,12 +37,12 @@ class MiClase:
 
 
 # Creamos un objeto para el medidor de tiempo
-time_meter = TimeMeter()
-
-# Creamos un hilo para actualizar el tiempo
-time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
-time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
-time_updater_thread.start()
+# time_meter = TimeMeter()
+#
+# # Creamos un hilo para actualizar el tiempo
+# time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
+# time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
+# time_updater_thread.start()
 
 # # Creamos instancias de las clases y las ejecutamos en hilos diferentes
 # clase1 = MiClase("Clase1", time_meter)

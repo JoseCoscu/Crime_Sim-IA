@@ -16,7 +16,7 @@ class Agent:
         self.map = city
         self.all_locations = all_locations
         self.sick = {'virus': False, 'inflamacio': False, 'mental': False, 'ninguna': True}
-        self.injuries = {'laceracion': False, 'quemadura': False, 'punzon': False, 'golpe': False, 'nunguna': False}
+        self.injuries = {'laceracion': True, 'quemadura': False, 'punzon': False, 'golpe': False, 'nunguna': False}
         self.home = house
         self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
@@ -186,7 +186,14 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        self.move_to_random_location()
+        while True:
+            self.stay_in_place(8)
+            if 'laceracion' in self.get_injuries():
+                self.go_hosp()
+            self.move_to_random_location()
+            if self.time.get_global_time() >= 22:
+                self.go_home()
+                break
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -344,10 +351,12 @@ class Criminal(Agent):
                 if elapse_time >= rob_time:
                     if hurt_someone >= 0.1:  ## Modificar esta probabilidad luego
                         person = r.choice(self.people_on_sight)
+                        if person == self:
+                            break
                         injure = r.choice(list(self.injuries.keys()))
                         person.injuries[injure] = True
                         person.injuries['ninguna'] = False
-                        print(person.get_injuries())
+                        # print(person.get_injuries())
                     break
             if 'detenido' in self.get_state():
                 print(f'{self.name} ha sido apresado\n')
