@@ -4,6 +4,10 @@ import random as r
 from graph import a_estrella
 from timer import TimeMeter
 
+heridas = ['laceracion', 'quemadura', 'punzon', 'golpe', 'nunguna']
+
+enfermedades = ['virus', 'inflamacio', 'mental', 'ninguna']
+
 
 class Agent:
     def __init__(self, id, name, location: Location, time: TimeMeter, city, all_locations, house: Location):
@@ -19,7 +23,8 @@ class Agent:
         self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
-                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False}
+                      'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False, 'sick': True,
+                      'injure': False}
         self.history = []
         self.locations = {'pd': [], 'hospitals': [], 'stores': [], 'gs_stations': [], 'casinos': [], 'fd': [],
                           'banks': []}

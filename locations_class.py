@@ -171,6 +171,12 @@ class Casino(Location):
         return
 
 
+class Pharmacy(Location):
+    def __init__(self, id, name, staff):
+        super().__init__(name, id)
+        self.staff = staff
+
+
 def create_map(locations):
     # Crear un grafo
     G = nx.Graph()
@@ -197,7 +203,8 @@ def show_locations(G):
         "Gas Station": "magenta",
         "Bank": "gold",
         "Store": 'purple',
-        'Casino': 'lightgreen'
+        'Casino': 'lightgreen',
+        'Pharmacy': 'lightblue'
     }
 
     # Obtener los colores de los nodos según la clase de lugar
