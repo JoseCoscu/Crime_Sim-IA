@@ -15,10 +15,9 @@ class Agent:
         self.time = 0
         self.map = city
         self.all_locations = all_locations
-        self.sick = {'virus': True, 'inflamacio': False, 'mental': False, 'ninguna': False}
+        self.sick = {'virus': False, 'inflamacio': False, 'mental': False, 'ninguna': True}
         self.injuries = {'laceracion': False, 'quemadura': False, 'punzon': False, 'golpe': False, 'ninguna': True}
         self.home = house
-        self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
                       'stop_Location': False,
                       'aux_operation': False, 'go_to_rob': False, 'rob_in_progress': False, 'detenido': False,
@@ -61,20 +60,22 @@ class Agent:
             if isinstance(i, Bank):
                 self.locations['banks'].append(i)
 
-
     def get_police_departments(self):
         places = []
         for i in self.all_locations:
             if isinstance(i, PoliceDepartment):
                 places.append(i)
 
-    def go_bank(self, bank: Bank):
+    def go_bank(self):
+        bank = self.nearest_place(self.locations['banks'][0])
         self.move_to(bank)
         self.stay_in_place(2)
-        if self.cash > 100:
-            bank.deposit(self, self.cash - 100)
+        if self.location.cash > 100:
+            bank.deposit(self, self.location.cash - 100)
+            print(f'{self.name} deposito en el banco {self.location.name}')
+            print(f'dinero en la casa de {self.name} es : {self.home.cash}')
         else:
-            bank.extract(self, self.cash - 100)
+            bank.extract(self, abs(self.location.cash - 100))
 
     def stay_in_place(self, time):
         start_time = self.time.get_global_time()
@@ -113,17 +114,17 @@ class Agent:
     def go_to_hospital(self):
         hospital = self.nearest_place(self.locations['hospitals'][0])
         self.move_to(hospital)
-        stay,time_local,medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
+        stay, time_local, medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
         if stay:
             self.stay_in_place(time_local)
-            if(medication != ""):
+            if (medication != ""):
                 print(f"{self.name} se recupero de {self.get_sick()} - {self.get_injuries()} y tomando {medication}")
 
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
             self.injuries['ninguna'] = True
             self.sick['ninguna'] = True
-            
+
             self.go_home()
         else:
             self.go_home()
@@ -133,7 +134,6 @@ class Agent:
             print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
-
 
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
@@ -208,12 +208,16 @@ class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         while True:
             self.stay_in_place(8)
-            if self.get_injuries() or self.get_sick():
+            if self.get_injuries() != 'ninguna' or self.get_sick() != 'ninguna':
                 self.go_to_hospital()
-            self.move_to_random_location()
+            if self.home.cash > 100:
+                print(f'{self.name} esta depositando')
+                self.go_bank()
             if self.time.get_global_time() >= 22:
+                print(f'{self.name} esta regresando a su casa' )
                 self.go_home()
                 break
+            self.move_to_random_location()
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)

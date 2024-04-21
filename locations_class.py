@@ -6,7 +6,7 @@ import hospital_exp as h
 
 
 class Location:
-    def __init__(self, name: str, id: int, cash=100):
+    def __init__(self, name: str, id: int, cash=1000):
         self.name = name
         self.connected_to = {}
         self.people_around = []
@@ -148,8 +148,9 @@ class Bank(Location):
         if agent.id in self.acount:
             self.acount[agent.id] += amount
         else:
+            print('extrayendo ') ######### Arreglarrrrrr
             self.acount[agent.id] = amount
-        agent.cash -= amount
+        agent.home.cash -= amount
         self.cash += amount
 
     def extract(self, agent, amount):
@@ -173,12 +174,6 @@ class Casino(Location):
     def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
-
-
-class Pharmacy(Location):
-    def __init__(self, id, name, staff):
-        super().__init__(name, id)
-        self.staff = staff
 
 
 def create_map(locations):
