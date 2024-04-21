@@ -45,7 +45,7 @@ class Location:
         self.people_around.remove(people)
 
     def collect(self, agent):
-        pass
+        agent.home.cash += 100  # Aumentar el dinero de la casa
 
 
 class PoliceDepartment(Location):

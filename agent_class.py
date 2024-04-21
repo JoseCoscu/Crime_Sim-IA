@@ -85,13 +85,8 @@ class Agent:
 
     def get_total_distance(self, route):
         dist = 0
-
-        for i, place in enumerate(route):
-            try:
-                next_place = route[i + 1]
-            except:
-                continue
-            dist += place.connected_to[next_place]
+        for i in range(len(route) - 1):
+            dist += route[i].connected_to[route[i + 1]]
         return dist
 
     def get_state(self):
@@ -286,7 +281,7 @@ class Detective(Citizen):
 
 
 class Employee(Citizen):
-    ## Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
+    ##Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
     def __call__(self, *args, **kwargs):
         self.go_work()
 
@@ -294,13 +289,22 @@ class Employee(Citizen):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.hired_in = work_place
         self.hired_in.staff.append(self)
+        self.route= self.get_route()
+        self.walk_time= self.get_total_distance(self.route)
 
+    def get_route(self):
+        route= a_estrella(self.map, self.location, self.hired_in)
+        return self.get_places(route)
+    
     def go_work(self):
-        self.stay_in_place(8)
+        self.stay_in_place(20-self.walk_time)
         self.move_to(self.hired_in)
-        self.stay_in_place(8)
+        print('llego a trabajar')
+        self.stay_in_place(50)
+        print('termino de trabajar')
         self.location.collect(self)
         self.go_home()
+##no borrar
 
 
 class Criminal(Agent):
