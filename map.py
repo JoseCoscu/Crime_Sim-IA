@@ -113,7 +113,7 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 1):
+for i in range(0, 3):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
     all_agents.append(

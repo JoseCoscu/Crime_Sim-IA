@@ -196,7 +196,7 @@ class Agent:
 
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
-        return dist / 10
+        return dist
 
 
 class Citizen(Agent):
