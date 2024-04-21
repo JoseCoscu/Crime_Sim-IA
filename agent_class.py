@@ -284,7 +284,14 @@ class Employee(Citizen):
     ##Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
     def __call__(self, *args, **kwargs):
         aux_random=r.random()
-        self.go_work()
+        print(aux_random)
+        if aux_random<0.85:
+            self.go_work()
+        else:
+            aux_random2=r.randint(0,len(self.sick)-2)
+            self.sick['ninguna']=False
+            self.sick[list(self.sick.keys())[aux_random2]]=True
+            self.go_to_hospital()
 
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -301,7 +308,7 @@ class Employee(Citizen):
         self.stay_in_place(20-self.walk_time)
         self.move_to(self.hired_in)
         print('llego a trabajar')
-        self.stay_in_place(10)
+        self.stay_in_place(1)
         print('termino de trabajar')
         self.home.collect()
         self.go_home()
