@@ -325,7 +325,15 @@ class Employee(Citizen):
 
 class Criminal(Agent):
     def __call__(self, *args, **kwargs):
-        self.try_robbery()
+        while True:
+            self.move_to_random_location()
+            if isinstance(self.location, PoliceDepartment):
+                continue
+            if isinstance(self.location, FireDepartment):
+                continue
+            if isinstance(self.location, Hospital):
+                continue
+            self.try_robbery()
 
     def __init__(self, id, name, location, weapons, vehicle, time, city, all_locations, house, mastery=1):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -375,7 +383,7 @@ class Criminal(Agent):
         if self.location == self.home:
             self.move_to_random_location()
             return
-        chances = self.calculate_success_probability() * 1000
+        chances = self.calculate_success_probability()
         rob_time = self.calculate_rob_time()  ## Arreglar tiempo de robo
         if chances >= 0.4 and 'calm' in self.location.get_state():
             start_time = self.time.get_global_time()
@@ -391,6 +399,7 @@ class Criminal(Agent):
                 if elapse_time >= rob_time:
                     if hurt_someone >= 0.1:  ## Modificar esta probabilidad luego
                         person = r.choice(self.people_on_sight)
+                        print(f'Se le va a meter la tiza a {person.name}')
                         if person == self:
                             break
                         injure = r.choice(list(self.injuries.keys()))
@@ -404,12 +413,12 @@ class Criminal(Agent):
 
             if is_success < chances:
                 stolen_cash = self.location.cash / 10 * self.mastery
-                self.cash += stolen_cash
+                self.home.cash += stolen_cash
                 self.location.cash -= stolen_cash
                 print(f'Dinero robado {stolen_cash} por {self.name}')
                 self.mastery += 1
             else:
-                print(f'robo fallido en {self.location.name} en {self.time * 10} segundos\n')
+                print(f'robo fallido en {self.location.name} en {self.time.get_global_time()} segundos\n')
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}\n')

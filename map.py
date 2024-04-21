@@ -105,7 +105,7 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 2):
+for i in range(0, 1):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[0], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
     all_agents.append(
@@ -166,16 +166,16 @@ time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa pri
 time_updater_thread.start()
 #
 # # hilos de oficiales
-# for i in range(0, len(officers)):
-#     t.append(threading.Thread(target=officers_threads, args=(i,)))
+for i in range(0, len(officers)):
+    t.append(threading.Thread(target=officers_threads, args=(i,)))
 
 ### hilos de citizens
 for i in range(0, len(citizens)):
     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #
 # ## hilos de criminales
-# for i in range(0, len(criminals)):
-#     t.append(threading.Thread(target=criminal_threads, args=(i,)))
+for i in range(0, len(criminals)):
+    t.append(threading.Thread(target=criminal_threads, args=(i,)))
 #
 # ## hilos de empleados
 # for i in range(0, len(employee)):
