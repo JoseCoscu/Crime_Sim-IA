@@ -115,6 +115,30 @@ class Agent:
     def go_home(self):
         self.move_to(self.home)
 
+    def go_to_hospital(self):
+        hospital = self.nearest_place(self.locations['hospitals'][0])
+        self.move_to(hospital)
+        stay,time_local,medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
+        if stay:
+            self.stay_in_place(time_local)
+            if(medication):
+                print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
+            else:
+                print(f"{self.name} se recupero de {self.get_injuries()} ")
+            self.sick = {k: False if v else v for k, v in self.sick.items()}
+            self.injuries = {k: False if v else v for k, v in self.injuries.items()}
+            self.go_home()
+        else:
+            self.go_home()
+            self.stay_in_place(time_local)
+            if(medication):
+                print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
+            else:
+                print(f"{self.name} se recupero de {self.get_injuries()} ")
+            self.sick = {k: False if v else v for k, v in self.sick.items()}
+            self.injuries = {k: False if v else v for k, v in self.injuries.items()}
+
+
     def move_to(self, new_location: Location):
         route = a_estrella(self.map, self.location, new_location)
         route.pop(0)
