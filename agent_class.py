@@ -125,10 +125,12 @@ class Agent:
         stay, time_local, medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
         if stay:
             self.stay_in_place(time_local)
+
             if (medication != ""):
                 print(f"{self.name} se recupero de {self.get_sick()} - {self.get_injuries()} y tomando {medication}")
             else:
-                print(f"{self.name} se recupero de {self.get_sick()} y tomando {medication}")
+                print(f"{self.name} se recupero de {self.get_injuries()} ")
+
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
             self.injuries['ninguna'] = True
