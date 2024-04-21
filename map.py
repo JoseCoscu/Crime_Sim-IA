@@ -25,8 +25,8 @@ for i in range(1, 21):
     all_locations.append(houses[-1])
 
 for i in range(1, 5):
-    stores.append(Store(i, "Store_" + str(i), 0, [], 100, 1000))
-    gs_stations.append(GasStation(i, "Gas Station_" + str(i), 0, [], 100))
+    stores.append(Store(i, "Store_" + str(i), 0, [], 300, 1000))
+    gs_stations.append(GasStation(i, "Gas Station_" + str(i), 0, [], 300))
 
     all_locations.append(stores[-1])
     all_locations.append(gs_stations[-1])
@@ -182,8 +182,10 @@ for i in range(0, len(criminals)):
 #     t.append(threading.Thread(target=employee_threads, args=(i,)))
 #
 
+
 for i in t:
     i.start()
+
 
 # criminals[0].try_robbery()
 # citizens[0]()
