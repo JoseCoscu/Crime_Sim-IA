@@ -189,7 +189,7 @@ time_updater_thread.start()
 # for i in range(0, len(employee)):
 #     t.append(threading.Thread(target=employee_threads, args=(i,)))
 #
-citizens[0]()
+employee[0]()
 
 # criminals[0].try_robbery()
 # citizens[0]()

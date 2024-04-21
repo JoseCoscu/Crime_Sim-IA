@@ -283,6 +283,7 @@ class Detective(Citizen):
 class Employee(Citizen):
     ##Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
     def __call__(self, *args, **kwargs):
+        aux_random=r.random()
         self.go_work()
 
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
@@ -300,9 +301,9 @@ class Employee(Citizen):
         self.stay_in_place(20-self.walk_time)
         self.move_to(self.hired_in)
         print('llego a trabajar')
-        self.stay_in_place(50)
+        self.stay_in_place(10)
         print('termino de trabajar')
-        self.location.collect(self)
+        self.home.collect()
         self.go_home()
 ##no borrar
 
