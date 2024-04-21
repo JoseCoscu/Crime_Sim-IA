@@ -173,6 +173,11 @@ class Agent:
                     station_pol = self.nearest_place(self.locations['pd'][0])
                     print(f"Calling nearest Police Station en {self.time.get_global_time()} segundos por {self.name}\n")
                     station_pol.send_patrol()
+                    #if(self.location.state['on_fire']):
+                    #    station_fire = self.nearest_place(self.locations['fd'][0])
+                    #    print(f"Calling nearest Fire Station en {self.time.get_global_time()} segundos por {self.name}\n")
+                    #    station_fire.send_fire_truck()
+                    
                     self.location.state['calm'] = False
                     self.location.state['wait_car'] = True
                     # print(station_pol.get_state())
@@ -183,7 +188,7 @@ class Agent:
         nearest_place = None
         dist = 999999
         for i in self.all_locations:
-            if isinstance(i, type_of):
+            if isinstance(i, type_of) and i.state['enabled']:
                 path = a_estrella(self.map, self.location, i)
                 path.pop(0)
                 route = self.get_places(path)
@@ -269,6 +274,7 @@ class Officer(Citizen):
         self.mastery = mastery
 
 
+
     def __call__(self, *args, **kwargs):
         start_time = self.time.get_global_time()
         while True:
@@ -315,6 +321,34 @@ class Officer(Citizen):
         #     if is_success >= 0.5:
         #         return False
         return True
+
+class Fire_Fighter(Citizen):
+    def __init__(self, id, name, location, time, city, all_locations, house,station):
+        super().__init__(id, name, location, time, city, all_locations, house)
+        self.station=station
+
+    def __call__(self, *args, **kwargs):
+        start_time = self.time.get_global_time()
+        while True:
+            aux_loc = None
+            if 'go_to_rob' in self.get_state():
+                for i in self.all_locations:
+                    if 'on_fire' in i.get_state():
+                        aux_loc = i
+                        break
+            if aux_loc:
+                self.stop_fire(aux_loc)
+                break
+
+    def stop_fire(self, location):
+        print(f'moviendose hacia fuego {self.time.get_global_time()}')
+
+        self.move_to(location)
+        self.stay_in_place(5)
+        print('fuego apagado')
+        self.state['go_to_rob']=False
+        location.state['on_fire']=False
+        self.move_to(self.station)
 
 
 class Detective(Citizen):

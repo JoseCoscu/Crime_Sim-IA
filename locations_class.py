@@ -16,7 +16,7 @@ class Location:
         self.cash = cash
         self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False,
                       "send_car": False,
-                      "wait_car": False, 'enabled': True}
+                      "wait_car": False, 'enabled': True,'in_fire':False}
 
     def set_state(self, *args):
         for i in self.state:
@@ -76,10 +76,14 @@ class FireDepartment(Location):
         super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
-        self.water = water
 
     def send_fire_truck(self, fire_fighters, truck, water, location):
-        return NotImplementedError
+        ## Aki solo cambiar el estado de la estacion
+        self.state['send_car'] = True
+        fire_man = r.randint(1, len(self.fire_fighters))
+        for i in range(fire_man):
+            pol_ran = r.choice(self.fire_fighters)
+            pol_ran.set_state('go_to_rob')
 
     def collect(self, fire_man):
         fire_man.home.cash += 100
