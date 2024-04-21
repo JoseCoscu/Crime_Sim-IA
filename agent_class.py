@@ -15,7 +15,7 @@ class Agent:
         self.time = 0
         self.map = city
         self.all_locations = all_locations
-        self.sick = {'virus': True, 'inflamacio': False, 'mental': False, 'ninguna': False}
+        self.sick = {'virus': False, 'inflamacio': False, 'mental': False, 'ninguna': True}
         self.injuries = {'laceracion': False, 'quemadura': False, 'punzon': False, 'golpe': False, 'ninguna': True}
         self.home = house
         self.cash = self.home.cash
@@ -197,16 +197,39 @@ class Agent:
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
         return dist
+    
+    def go_to_store(self):
+        store = self.nearest_place(self.locations['stores'][0])
+        self.move_to(store)
+        store.buy(self)
+        self.stay_in_place(5)
+        self.go_home()
 
+    def go_to_casino(self):
+        casino = self.nearest_place(self.locations['casinos'][0])
+        self.move_to(casino)
+        casino.play(self)
+        self.stay_in_place(5)
+        self.go_home()
+        
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         while True:
             self.stay_in_place(8)
-            if self.get_injuries() or self.get_sick():
+            if self.get_injuries()!='ninguna' or self.get_sick()!='ninguna':
                 self.go_to_hospital()
-            self.move_to_random_location()
-            if self.time.get_global_time() >= 22:
+            aux_mov=r.random()
+            if aux_mov<0.5:
+                print("########move random")
+                self.move_to_random_location()
+            elif aux_mov<0.8 and aux_mov>=0.5:
+                print("########move casino")    
+                self.go_to_casino()
+            else:
+                print("########move store")    
+                self.go_to_store()
+            if self.time.get_global_time() >= 100:
                 self.go_home()
                 break
 
@@ -308,7 +331,7 @@ class Employee(Citizen):
         self.stay_in_place(20-self.walk_time)
         self.move_to(self.hired_in)
         print('llego a trabajar')
-        self.stay_in_place(1)
+        self.stay_in_place(50)
         print('termino de trabajar')
         self.home.collect()
         self.go_home()

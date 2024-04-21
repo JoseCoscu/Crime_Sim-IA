@@ -6,7 +6,7 @@ import hospital_exp as h
 
 
 class Location:
-    def __init__(self, name: str, id: int, cash=100):
+    def __init__(self, name: str, id: int, cash=200):
         self.name = name
         self.connected_to = {}
         self.people_around = []
@@ -117,6 +117,13 @@ class Store(Location):
     def hire(self, people):
         self.staff.append(people)
 
+    def buy(self, agent):
+        print(f"{agent.home.cash}-{self.cash}")
+        expense=int(r.random()*100)
+        agent.home.cash -= expense
+        self.cash+= expense
+        print(f"{agent.home.cash}-{self.cash}")
+
     def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
@@ -167,12 +174,24 @@ class Bank(Location):
 class Casino(Location):
     def __init__(self, id, name, staff):
         super().__init__(name, id)
-        self.cash = 1000000
+        self.cash = 1000
         self.staff = staff
 
     def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
+    
+    def play(self,agent):
+        aux_bet=r.random()
+        print(f"{agent.home.cash}-{self.cash}")
+
+        if(aux_bet<0.4):
+            agent.home.cash+=100
+            self.cash-=100
+        else:
+            agent.home.cash-=100
+            self.cash+=100
+        print(f"{agent.home.cash}-{self.cash}")
 
 
 class Pharmacy(Location):
