@@ -16,7 +16,7 @@ class Location:
         self.cash = cash
         self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False,
                       "send_car": False,
-                      "wait_car": False, 'enabled': True,'in_fire':False}
+                      "wait_car": False, 'enabled': True, 'in_fire': False}
 
     def set_state(self, *args):
         for i in self.state:
@@ -44,7 +44,10 @@ class Location:
         self.people_around.append(people)
 
     def people_left(self, people):
-        self.people_around.remove(people)
+        try:
+            self.people_around.remove(people)
+        except:
+            pass
 
     def collect(self):
         self.cash += 100  # Aumentar el dinero de la casa
@@ -61,10 +64,11 @@ class PoliceDepartment(Location):
     def send_patrol(self):
         ## Aki solo cambiar el estado de la estacion
         self.state['send_car'] = True
-        pol = r.randint(1, len(self.current_officers))
-        for i in range(pol):
-            pol_ran = r.choice(self.current_officers)
-            pol_ran.set_state('work', 'go_to_rob')
+        if len(self.current_officers) > 0:
+            pol = r.randint(1, len(self.current_officers))
+            for i in range(pol):
+                pol_ran = r.choice(self.current_officers)
+                pol_ran.set_state('work', 'go_to_rob')
 
     def collect(self, officer):
         officer.home.cash += 100
@@ -76,7 +80,6 @@ class FireDepartment(Location):
         super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
-        
 
     def send_fire_truck(self, fire_fighters, truck, water, location):
         ## Aki solo cambiar el estado de la estacion
@@ -85,8 +88,7 @@ class FireDepartment(Location):
         for i in range(fire_man):
             pol_ran = r.choice(self.fire_fighters)
             pol_ran.set_state('go_to_rob')
-        
-            
+
     def collect(self, fire_man):
         fire_man.home.cash += 100
         return
@@ -104,7 +106,6 @@ class Hospital(Location):
 
     ##hacer sistema experto para hospital y cobrar_diagnosticar
     ##hacer herencia de localidades publicas a hospitales polica y fire_dep
-
 
     def collect(self, doctor):
         doctor.home.cash += 100
@@ -192,15 +193,16 @@ class Casino(Location):
 
     def play(self, agent):
         aux_bet = r.random()
-        print(f"{agent.home.cash}-{self.cash}")
+        print(f"{agent.name} va a apostar")
 
         if (aux_bet < 0.4):
             agent.home.cash += 100
             self.cash -= 100
+            print(f"{agent.name} Gano!!!!!")
         else:
             agent.home.cash -= 100
             self.cash += 100
-        print(f"{agent.home.cash}-{self.cash}")
+        print(f"{agent.name} Perdioooo!!!!!!!!")
 
 
 def create_map(locations):

@@ -105,19 +105,21 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 1):
-    all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[0], time_meter, G, all_locations, houses[0]))
+for i in range(0, 10):
+    house = r.choice(houses)
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
     citizens.append(all_agents[-1])
-    station = r.randint(0,len(police_departments)-1)
+    station = r.randint(0, len(police_departments) - 1)
     all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0], police_departments[station]))
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, r.choice(houses),
+                police_departments[station]))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
     all_agents.append(
-        Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
+        Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations, r.choice(houses), 1))
     criminals.append(all_agents[-1])
     all_agents.append(
-        Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
+        Employee(id, 'Employee_' + str(i), r.choice(houses), stores[0], time_meter, G, all_locations, r.choice(houses)))
     employee.append(all_agents[-1])
 
 for i in officers:
@@ -186,7 +188,6 @@ for i in range(0, len(criminals)):
 
 for i in t:
     i.start()
-
 
 # criminals[0].try_robbery()
 # citizens[0]()
