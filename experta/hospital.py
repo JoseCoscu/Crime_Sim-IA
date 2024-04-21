@@ -127,10 +127,10 @@ class Hospital_Diagnostic (KnowledgeEngine):
         print("dale pal gao pp")
 
 
-identificador= Hospital_Diagnostic()
-identificador.reset()
+def diag_hosp(herida,enfermedad):
+    identificador= Hospital_Diagnostic()
+    identificador.reset()
+    identificador.declare(Diagnostic(herida=herida,enfermedad=enfermedad))
+    identificador.run()
 
-herida=input("tipo de herida?laceracion/quemadura/punzon/golpe/ninguna")
-enfermedad=input("tipo de enfermeda?virus/inflamacion/mental/ninguna")
-identificador.declare(Diagnostic(herida=herida,enfermedad=enfermedad))
-identificador.run()
+diag_hosp('laceracion','virus')
