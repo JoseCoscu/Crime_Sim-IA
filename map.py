@@ -113,19 +113,19 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 2):
+for i in range(0, 1):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[8], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
-    # all_agents.append(
-    #     Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
-    # officers.append(all_agents[-1])
-    # officers[-1].state['work'] = True
-    # all_agents.append(
-    #     Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
-    # criminals.append(all_agents[-1])
-    # all_agents.append(
-    #     Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
-    # employee.append(all_agents[-1])
+    all_agents.append(
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
+    officers.append(all_agents[-1])
+    officers[-1].state['work'] = True
+    all_agents.append(
+        Criminal(id, 'Criminal_' + str(i), houses[0], [], [], time_meter, G, all_locations, houses[5], 10))
+    criminals.append(all_agents[-1])
+    all_agents.append(
+        Employee(id, 'Employee_' + str(i), houses[0], stores[0], time_meter, G, all_locations, houses[10]))
+    employee.append(all_agents[-1])
 
 for i in officers:
     police_departments[0].current_officers.append(i)
@@ -182,8 +182,8 @@ for i in range(0, len(citizens)):
     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #
 # ## hilos de criminales
-# for i in range(0, len(criminals)):
-#     t.append(threading.Thread(target=criminal_threads, args=(i,)))
+for i in range(0, len(criminals)):
+    t.append(threading.Thread(target=criminal_threads, args=(i,)))
 #
 # ## hilos de empleados
 # for i in range(0, len(employee)):
