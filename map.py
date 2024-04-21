@@ -105,11 +105,12 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 2):
+for i in range(0, 1):
     all_agents.append(Citizen(id, 'Citizen_' + str(i), houses[0], time_meter, G, all_locations, houses[0]))
     citizens.append(all_agents[-1])
+    station = r.randint(0,len(police_departments)-1)
     all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0]))
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, houses[0], police_departments[station]))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
     all_agents.append(

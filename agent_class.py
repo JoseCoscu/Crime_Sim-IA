@@ -170,7 +170,7 @@ class Agent:
                         'Policia o Detective apresa al ladron')  # si un oficial o un detective llega aun lugar y estan robando
                     # break
                 else:
-                    station_pol = self.nearest_place(self.locations['pd'][0])
+                    station_pol: PoliceDepartment = self.nearest_place(self.locations['pd'][0])
                     print(f"Calling nearest Police Station en {self.time.get_global_time()} segundos por {self.name}\n")
                     station_pol.send_patrol()
                     self.location.state['calm'] = False
@@ -213,7 +213,7 @@ class Agent:
     def estimate_arrival_time(self, place):
         dist = self.get_distance(place)
         return dist
-    
+
     def go_to_store(self):
         store = self.nearest_place(self.locations['stores'][0])
         self.move_to(store)
@@ -227,13 +227,13 @@ class Agent:
         casino.play(self)
         self.stay_in_place(5)
         self.go_home()
-        
+
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         while True:
             self.stay_in_place(8)
-            if self.get_injuries()!='ninguna' or self.get_sick()!='ninguna':
+            if self.get_injuries() != 'ninguna' or self.get_sick() != 'ninguna':
                 self.go_to_hospital()
             if self.home.cash > 100:
                 print(f'{self.name} esta depositando')
@@ -243,34 +243,32 @@ class Citizen(Agent):
             #     self.go_bank_extract()
             if self.time.get_global_time() >= 22:
                 print(f'{self.name} esta regresando a su casa')
-            aux_mov=r.random()
-            if aux_mov<0.5:
+            aux_mov = r.random()
+            if aux_mov < 0.5:
                 print("########move random")
                 self.move_to_random_location()
-            elif aux_mov<0.8 and aux_mov>=0.5:
-                print("########move casino")    
+            elif aux_mov < 0.8 and aux_mov >= 0.5:
+                print("########move casino")
                 self.go_to_casino()
             else:
-                print("########move store")    
+                print("########move store")
                 self.go_to_store()
             if self.time.get_global_time() >= 100:
                 self.go_home()
-
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
 
 
 class Officer(Citizen):
-    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations, house):
+    def __init__(self, id, name, location, weapons, vehicle, mastery, time, city, all_locations, house, station):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.weapons = weapons
         self.vehicle = vehicle
         self.mastery = mastery
-
+        self.station: PoliceDepartment = station
 
     def __call__(self, *args, **kwargs):
-        start_time = self.time.get_global_time()
         while True:
             aux_loc = None
             if 'go_to_rob' in self.get_state():
@@ -293,13 +291,16 @@ class Officer(Citizen):
                 for i in people_in_rob:
                     chance = self.criminal_chance(i)
                     if chance and not i.state['detenido']:
-
                         i.state['detenido'] = True
                         i.state['rob_in_progress'] = False
                         print(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos\n')
                     elif not chance:
                         print(f'{i.name} escapo')
+        print(f'{self.name} esta volviendo a la estacion {self.station.name} en el segundo {self.time.get_global_time()}')
+        self.return_station()
 
+    def return_station(self):
+        self.move_to(self.station)
 
     def criminal_chance(self, criminal):
         # chance_c = criminal.mastery / 10
@@ -330,35 +331,37 @@ class Detective(Citizen):
 class Employee(Citizen):
     ##Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
     def __call__(self, *args, **kwargs):
-        aux_random=r.random()
+        aux_random = r.random()
         print(aux_random)
-        if aux_random<0.85:
+        if aux_random < 0.85:
             self.go_work()
         else:
-            aux_random2=r.randint(0,len(self.sick)-2)
-            self.sick['ninguna']=False
-            self.sick[list(self.sick.keys())[aux_random2]]=True
+            aux_random2 = r.randint(0, len(self.sick) - 2)
+            self.sick['ninguna'] = False
+            self.sick[list(self.sick.keys())[aux_random2]] = True
             self.go_to_hospital()
 
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.hired_in = work_place
         self.hired_in.staff.append(self)
-        self.route= self.get_route()
-        self.walk_time= self.get_total_distance(self.route)
+        self.route = self.get_route()
+        self.walk_time = self.get_total_distance(self.route)
 
     def get_route(self):
-        route= a_estrella(self.map, self.location, self.hired_in)
+        route = a_estrella(self.map, self.location, self.hired_in)
         return self.get_places(route)
-    
+
     def go_work(self):
-        self.stay_in_place(20-self.walk_time)
+        self.stay_in_place(20 - self.walk_time)
         self.move_to(self.hired_in)
         print('llego a trabajar')
         self.stay_in_place(50)
         print('termino de trabajar')
         self.home.collect()
         self.go_home()
+
+
 ##no borrar
 
 
