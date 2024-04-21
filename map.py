@@ -8,7 +8,6 @@ from timer import TimeMeter, time_updater
 
 police_departments = []
 hospitals = []
-pharmacy = []
 fire_departments = []
 houses = []
 stores = []
@@ -38,10 +37,8 @@ for i in range(1, 3):
     casinos.append(Casino(i, "Casino_" + str(i), []))
     police_departments.append(PoliceDepartment(i, "PNR_" + str(i), [], [], []))
     fire_departments.append(FireDepartment(i, "Fire Department_" + str(i), [], [], 100))
-    pharmacy.append(Pharmacy(i, "Pharmacy_" + str(i), []))
 
     all_locations.append(hospitals[-1])
-    all_locations.append(pharmacy[-1])
     all_locations.append(banks[-1])
     all_locations.append(casinos[-1])
     all_locations.append(police_departments[-1])
@@ -57,11 +54,6 @@ police_departments[1].add_row([stores[3], banks[1], houses[19], casinos[1]], 3, 
 
 hospitals[0].add_row([gs_stations[3], houses[15], houses[18], casinos[1]], 5, 8)
 hospitals[1].add_row([houses[13], houses[14], houses[16], gs_stations[2], stores[2]], 4, 9)
-
-## Pharmacy Connections ------------------------------
-
-pharmacy[0].add_row([hospitals[0], gs_stations[3], houses[18]], 1, 3)
-pharmacy[1].add_row([hospitals[1], gs_stations[2], houses[13]], 1, 3)
 
 ## Banks Connections -----------------------------------
 
@@ -174,26 +166,30 @@ time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa pri
 time_updater_thread.start()
 #
 # # hilos de oficiales
-# for i in range(0, len(officers)):
-#     t.append(threading.Thread(target=officers_threads, args=(i,)))
-#
-# ### hilos de citizens
-# for i in range(0, len(citizens)):
-#     t.append(threading.Thread(target=citizens_threads, args=(i,)))
+for i in range(0, len(officers)):
+    t.append(threading.Thread(target=officers_threads, args=(i,)))
+
+### hilos de citizens
+for i in range(0, len(citizens)):
+    t.append(threading.Thread(target=citizens_threads, args=(i,)))
 #
 # ## hilos de criminales
-# for i in range(0, len(criminals)):
-#     t.append(threading.Thread(target=criminal_threads, args=(i,)))
+for i in range(0, len(criminals)):
+    t.append(threading.Thread(target=criminal_threads, args=(i,)))
 #
 # ## hilos de empleados
 # for i in range(0, len(employee)):
 #     t.append(threading.Thread(target=employee_threads, args=(i,)))
 #
-#employee[0]()
-citizens[0]()
+
+
+for i in t:
+    i.start()
+
+
 # criminals[0].try_robbery()
 # citizens[0]()
 
-show_locations(G)
+# show_locations(G)
 
 # print(all_agents[0].get_distance(route[1]))
