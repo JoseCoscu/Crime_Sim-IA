@@ -346,9 +346,10 @@ class Fire_Fighter(Citizen):
         self.move_to(location)
         self.stay_in_place(5)
         print('fuego apagado')
-        self.state['go_to_rob']=False
         location.state['on_fire']=False
         self.move_to(self.station)
+        self.state['go_to_rob']=False
+        
 
 
 class Detective(Citizen):

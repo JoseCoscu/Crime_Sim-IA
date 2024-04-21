@@ -76,6 +76,7 @@ class FireDepartment(Location):
         super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
+        
 
     def send_fire_truck(self, fire_fighters, truck, water, location):
         ## Aki solo cambiar el estado de la estacion
@@ -84,7 +85,8 @@ class FireDepartment(Location):
         for i in range(fire_man):
             pol_ran = r.choice(self.fire_fighters)
             pol_ran.set_state('go_to_rob')
-
+        
+            
     def collect(self, fire_man):
         fire_man.home.cash += 100
         return
@@ -103,8 +105,6 @@ class Hospital(Location):
     ##hacer sistema experto para hospital y cobrar_diagnosticar
     ##hacer herencia de localidades publicas a hospitales polica y fire_dep
 
-    def send_ambulance(self, place):
-        return NotImplementedError
 
     def collect(self, doctor):
         doctor.home.cash += 100
