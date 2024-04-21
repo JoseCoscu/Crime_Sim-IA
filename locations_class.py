@@ -135,6 +135,8 @@ class GasStation(Store):
 class House(Location):
     def __init__(self, id, name):
         super().__init__(name, id)
+        self.state['go_deposit'] = False
+        self.state['go_extract'] = False
 
 
 class Bank(Location):
@@ -145,11 +147,11 @@ class Bank(Location):
         self.acount = {}
 
     def deposit(self, agent, amount):
-        if agent.id in self.acount:
-            self.acount[agent.id] += amount
-        else:
-            print('extrayendo ') ######### Arreglarrrrrr
-            self.acount[agent.id] = amount
+        if agent.home.id in self.acount:
+            self.acount[agent.home.id] += amount
+        elif agent.home.cash >= 100:
+            print(f'{agent.name} deposito {amount}')  ######### Arreglarrrrrr
+            self.acount[agent.home.id] = amount
         agent.home.cash -= amount
         self.cash += amount
 
