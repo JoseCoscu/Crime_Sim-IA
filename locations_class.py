@@ -92,7 +92,7 @@ class Hospital(Location):
         self.doctors = doctors
 
     def diagnostic(self, herida, enfermedad):
-        h.diag_hosp(herida, enfermedad)
+        return h.diag_hosp(herida, enfermedad)
 
     ##hacer sistema experto para hospital y cobrar_diagnosticar
     ##hacer herencia de localidades publicas a hospitales polica y fire_dep

@@ -15,8 +15,8 @@ class Agent:
         self.time = 0
         self.map = city
         self.all_locations = all_locations
-        self.sick = {'virus': False, 'inflamacio': False, 'mental': False, 'ninguna': True}
-        self.injuries = {'laceracion': True, 'quemadura': False, 'punzon': False, 'golpe': False, 'nunguna': False}
+        self.sick = {'virus': True, 'inflamacio': False, 'mental': False, 'ninguna': False}
+        self.injuries = {'laceracion': False, 'quemadura': False, 'punzon': False, 'golpe': False, 'ninguna': True}
         self.home = house
         self.cash = self.home.cash
         self.state = {'move_path': False, 'work': False, 'move_random': False, 'sleep': False, 'in_house': True,
@@ -61,11 +61,6 @@ class Agent:
             if isinstance(i, Bank):
                 self.locations['banks'].append(i)
 
-    def go_hosp(self):
-        if 'injure' in self.get_state():
-            hospital = self.nearest_place(self.locations['hospitals'][0])
-            self.move_to(hospital)
-            hospital.diagnostic(self.get_injuries(), self.get_sick())
 
     def get_police_departments(self):
         places = []
@@ -121,20 +116,21 @@ class Agent:
         stay,time_local,medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
         if stay:
             self.stay_in_place(time_local)
-            if(medication):
-                print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
-            else:
-                print(f"{self.name} se recupero de {self.get_injuries()} ")
+            if(medication != ""):
+                print(f"{self.name} se recupero de {self.get_sick()} - {self.get_injuries()} y tomando {medication}")
+
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
+            self.injuries['ninguna'] = True
+            self.sick['ninguna'] = True
+            
             self.go_home()
         else:
             self.go_home()
             self.stay_in_place(time_local)
-            if(medication):
-                print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
-            else:
-                print(f"{self.name} se recupero de {self.get_injuries()} ")
+            self.injuries['ninguna'] = True
+            self.sick['ninguna'] = True
+            print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
 
@@ -212,8 +208,8 @@ class Citizen(Agent):
     def __call__(self, *args, **kwargs):
         while True:
             self.stay_in_place(8)
-            if 'laceracion' in self.get_injuries():
-                self.go_hosp()
+            if self.get_injuries() or self.get_sick():
+                self.go_to_hospital()
             self.move_to_random_location()
             if self.time.get_global_time() >= 22:
                 self.go_home()

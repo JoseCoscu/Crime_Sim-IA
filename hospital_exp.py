@@ -12,7 +12,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     def __init__(self):
         super().__init__()
-        self.result = None
+        self.result = ""
 
     # laceracion
     @Rule(Diagnostic(herida="laceracion", enfermedad="virus"))
@@ -29,7 +29,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     @Rule(Diagnostic(herida="laceracion", enfermedad="ninguna"))
     def lac_non(self):
-        self.result = (True, 10, None)
+        self.result = (True, 10, "")
 
     # quemadura
     @Rule(Diagnostic(herida="quemadura", enfermedad="virus"))
@@ -46,7 +46,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     @Rule(Diagnostic(herida="quemadura", enfermedad="ninguna"))
     def quem_non(self):
-        self.result = (True, 9, None)
+        self.result = (True, 9, "")
 
     # punzon
     @Rule(Diagnostic(herida="punzon", enfermedad="virus"))
@@ -63,7 +63,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     @Rule(Diagnostic(herida="punzon", enfermedad="ninguna"))
     def pun_non(self):
-        self.result = (True, 8, None)
+        self.result = (True, 8, "")
 
     # golpe
     @Rule(Diagnostic(herida="golpe", enfermedad="virus"))
@@ -80,7 +80,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     @Rule(Diagnostic(herida="golpe", enfermedad="ninguna"))
     def golp_non(self):
-        self.result = (True, 5, None)
+        self.result = (True, 5, "")
 
     # ninguna
     @Rule(Diagnostic(herida="ninguna", enfermedad="virus"))
@@ -97,7 +97,7 @@ class Hospital_Diagnostic(KnowledgeEngine):
 
     @Rule(Diagnostic(herida="ninguna", enfermedad="ninguna"))
     def non_non(self):
-        self.result = (False, 0, None)
+        self.result = (False, 0, "")
 
 
 def diag_hosp(herida, enfermedad):
@@ -105,6 +105,9 @@ def diag_hosp(herida, enfermedad):
     identificador.reset()
     identificador.declare(Diagnostic(herida=herida, enfermedad=enfermedad))
     identificador.run()
-    return identificador.result
-
+    stay=identificador.result[0]
+    local_time=identificador.result[1]
+    medicate=identificador.result[2]
+    print(stay,local_time,medicate)
+    return stay,local_time,medicate
 
