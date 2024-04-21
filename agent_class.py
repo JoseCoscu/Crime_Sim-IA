@@ -235,9 +235,9 @@ class Citizen(Agent):
             if self.home.cash > 100:
                 print(f'{self.name} esta depositando')
                 self.go_bank_deposit()
-            if self.home.cash < 100:
-                print(f'{self.name} esta extrayendo')
-                self.go_bank_extract()
+            # if self.home.cash < 100:
+            #     print(f'{self.name} esta extrayendo')
+            #     self.go_bank_extract()
             if self.time.get_global_time() >= 22:
                 print(f'{self.name} esta regresando a su casa')
             aux_mov=r.random()
@@ -252,8 +252,7 @@ class Citizen(Agent):
                 self.go_to_store()
             if self.time.get_global_time() >= 100:
                 self.go_home()
-                break
-            self.move_to_random_location()
+
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -266,10 +265,10 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
 
+
     def __call__(self, *args, **kwargs):
         start_time = self.time.get_global_time()
         while True:
-            # elapsed_time = self.time.get_global_time() - start_time
             aux_loc = None
             if 'go_to_rob' in self.get_state():
                 for i in self.all_locations:
@@ -277,7 +276,6 @@ class Officer(Citizen):
                         aux_loc = i
                         break
             if aux_loc:
-                # self.time += elapsed_time
                 self.call_of_dutty(aux_loc)
                 break
 
@@ -298,6 +296,7 @@ class Officer(Citizen):
                         print(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos\n')
                     elif not chance:
                         print(f'{i.name} escapo')
+
 
     def criminal_chance(self, criminal):
         # chance_c = criminal.mastery / 10
