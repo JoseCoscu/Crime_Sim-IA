@@ -163,24 +163,9 @@ class Agent:
         return nearest_place
 
     def move_to_random_location(self):
-        adjacent_locations = self.location.get_adjacent_locations()
-        new_location = r.choice(adjacent_locations)
-        start_time = self.time.get_global_time()
-        times = self.estimate_arrival_time(new_location)
-        while True:
-            end_time = self.time.get_global_time()  # Registro del tiempo de finalización
-            elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
-
-            if elapsed_time >= times:  # Condicion seria si ya paso el tiempo
-                self.location.people_left(self)
-                self.location = new_location
-                self.location.people_arrived(self)
-                print(
-                    f'{self.name} se movio hacia, {self.location.name} y en el {self.time.get_global_time()} segundossss\n')
-                break
-        if "rob" in self.location.get_state():
-            print("llam apolice")
-            self.location.state['wait_car'] = True
+        new_location = r.choice(self.all_locations)
+        print(f"{self.name} se va a mover de {self.location.name} a {new_location.name}")
+        self.move_to(new_location)
 
     def get_places(self, route):
         path = []
@@ -201,9 +186,7 @@ class Agent:
 
 class Citizen(Agent):
     def __call__(self, *args, **kwargs):
-        for  i in self.all_locations:
-            if i.name == 'House_1':
-                self.move_to(i)
+        self.move_to_random_location()
 
     def __init__(self, id, name, location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)

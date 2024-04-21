@@ -19,7 +19,7 @@ class TimeMeter:
 
 def time_updater(time_meter):
     while True:
-        time.sleep(0.1)  # Espera 1 segundo
+        time.sleep(0.01)  # Espera 1 segundo
         time_meter.increment_global_time(1)  # Incrementa el tiempo global en 1 segundo
 
 
