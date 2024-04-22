@@ -1,8 +1,8 @@
 from openai import OpenAI
 import tkinter as tk
-import tkinter as tk
 
 description = ""  # Variable global para almacenar el texto
+default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10, 'habitantes por casa': 5}
 
 
 def guardar_texto():
@@ -10,6 +10,8 @@ def guardar_texto():
     description = entrada_texto.get("1.0", "end-1c")
     ventana.destroy()  # Cerrar la ventana después de guardar el texto
 
+
+# region Ventana
 
 # Crear la ventana
 ventana = tk.Tk()
@@ -48,47 +50,74 @@ boton_guardar.pack()
 # Ejecutar el bucle principal de la ventana
 ventana.mainloop()
 
-# Después de que se cierra la ventana, puedes acceder al texto guardado
-print("Texto guardado fuera de:", description)
+# endregion
 
 # Point to the local server
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
 
-dic = {}
 
-while True:
-    print('Procesando......')
-    completion = client.chat.completions.create(
-        messages=[
-            {"role": "system",
-             "content": "Dada la siguiente descripcion de una ciudad, extrae los siguientes datos en forma de json"
-                        "habitantes:"
-                        "criminales:"
-                        "oficiales:"
-                        "bomberos:"
-                        "habitantes por casa:"
-                        "si no hay mensaje devuelve el json vacio,"
-                        "si faltan datos devuelve los datos que falten como 0"
-                        "escribe solo el json"},
-            {"role": "user",
-             "content": f"{description}"
+def procesate_text(description):
+    dic = {}
+    i = 1
+    while True:
+        if i>=3:
+            return default_dic
+        print(f'Procesando......{i}')
+        completion = client.chat.completions.create(
+            messages=[
+                {"role": "system",
+                 "content": "Dada la siguiente descripcion de una ciudad, extrae los siguientes datos en forma de json"
+                            "habitantes:"
+                            "criminales:"
+                            "oficiales:"
+                            "bomberos:"
+                            "habitantes por casa:"
+                            "si no hay mensaje devuelve el json vacio,"
+                            "si faltan datos devuelve los datos que falten como 0"
+                            "escribe solo el json"},
+                {"role": "user",
+                 "content": f"{description}"
 
-             }
+                 }
 
-        ],
-        model="text-davinci-002",  # Specify the model here
-        temperature=0.7,
-    )
-    try:
-        dic = eval(completion.choices[0].message.content)
-        if dic:
-            print(dic)
-            break
-    except:
-        continue
+            ],
+            model="text-davinci-002",  # Specify the model here
+            temperature=0.7,
+        )
+        try:
+            dic = eval(completion.choices[0].message.content)
+            if dic:
+                print(dic)
+                break
+        except:
+            i += 1
+            continue
+    return dic
 
-habitantes = dic['habitantes']
-criminales = dic['criminales']
-oficiales = dic['oficiales']
-bomberos = dic['bomberos']
-hab_x_casa = dic['habitantes por casa']
+
+if description != "":
+    dic = procesate_text(description)
+else:
+    dic = default_dic
+try:
+    habitantes = dic['habitantes'] if dic['habitantes'] != 0 else default_dic['habitantes']
+except:
+    habitantes = default_dic['habitantes']
+try:
+    criminales = dic['criminales'] if dic['criminales'] != 0 else default_dic['criminales']
+except:
+    criminales = default_dic['criminales']
+try:
+    oficiales = dic['oficiales'] if dic['oficiales'] != 0 else default_dic['oficiales']
+except:
+    oficiales = default_dic['oficiales']
+
+try:
+    bomberos = dic['bomberos'] if dic['bomberos'] != 0 else default_dic['bomberos']
+except:
+    bomberos = default_dic['bomberos']
+try:
+    hab_x_casa = dic['habitantes por casa'] if dic['habitantes por casa'] != 0 else default_dic['habitantes por casa']
+except:
+    hab_x_casa = default_dic['habitantes por casa']
+
