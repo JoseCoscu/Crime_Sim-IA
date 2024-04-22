@@ -4,7 +4,7 @@ import random as r
 from graph import *
 import threading
 from timer import TimeMeter, time_updater
-from text_process import habitantes,oficiales,criminales,hab_x_casa,bomberos
+#from text_process import habitantes,oficiales,criminales,hab_x_casa,bomberos
 
 police_departments = []
 hospitals = []
@@ -171,26 +171,26 @@ for i in fire_fighters:
 
 
 def citizens_threads(i):
-    citizens[i]()
+    citizens[i](100)
     print(f'tiempo de {citizens[i].name} es {citizens[i].time.get_global_time()}')
 
 
 def criminal_threads(i):
-    criminals[i]()
+    criminals[i](100)
     print(f'tiempo de {criminals[i].name} es {criminals[i].time.get_global_time()}')
 
 
 def employee_threads(i):
-    employee[i]()
+    employee[i](100)
     print(f'tiempo de {employee[i].name} es {employee[i].time.get_global_time()}')
 
 
 def officers_threads(i):
-    officers[i]()
+    officers[i](100)
 
 
 def fire_fighters_threads(i):
-    fire_fighters[i]()
+    fire_fighters[i](100)
 
 
 #
@@ -231,6 +231,10 @@ time_updater_thread.start()
 for i in t:
     i.start()
 
+for i in t:
+    i.join()
+
+print(citizens[0].history)
 # criminals[0].try_robbery()
 # citizens[0]()
 

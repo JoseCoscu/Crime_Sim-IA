@@ -76,6 +76,7 @@ class Agent:
                 bank.deposit(self, self.home.cash - 100)
                 self.home.state['go_deposit'] = False
                 print(f'{self.name} deposito en el banco {bank.name}')
+                self.history.append(f'{self.name} deposito en el banco {bank.name} en {self.time.get_global_time()}')
                 print(f'dinero en la casa de {self.name} es : {self.home.cash}')
 
     def go_bank_extract(self):
@@ -91,6 +92,7 @@ class Agent:
                 print(f'dinero en la casa de {self.name} es : {self.home.cash}')
 
     def stay_in_place(self, time):
+        self.history.append(f'{self.name}  se va a quedar {self.location.name} por {time} segundos en {self.time.get_global_time()}')
         start_time = self.time.get_global_time()
         while True:
             elapse_time = self.time.get_global_time() - start_time
@@ -120,6 +122,7 @@ class Agent:
         self.move_to(self.home)
 
     def go_to_hospital(self):
+
         hospital = self.nearest_place(self.locations['hospitals'][0])
         self.move_to(hospital)
         stay, time_local, medication = hospital.diagnostic(self.get_injuries(), self.get_sick())
@@ -128,8 +131,10 @@ class Agent:
 
             if (medication != ""):
                 print(f"{self.name} se recupero de {self.get_sick()} - {self.get_injuries()} y tomando {medication}")
+                self.history.append(f"{self.name} se recupero de {self.get_sick()} - {self.get_injuries()} en {self.location.name} y tomando {medication}  en {self.time.get_global_time()}")
             else:
                 print(f"{self.name} se recupero de {self.get_injuries()} ")
+                self.history.append(f"{self.name} se recupero de {self.get_injuries()} en {self.location.name} y en {self.time.get_global_time()}")
 
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
@@ -142,7 +147,8 @@ class Agent:
             self.stay_in_place(time_local)
             self.injuries['ninguna'] = True
             self.sick['ninguna'] = True
-            print(f"{self.name} se recupero de {self.get_sick()} tomando {medication}")
+            print(f"{self.name} se recupero de {self.get_sick()} tomando {medication} ")
+            self.history.append(f"{self.name} se recupero de {self.get_sick()} tomando {medication} en {self.location.name} y en {self.time.get_global_time()}")
             self.sick = {k: False if v else v for k, v in self.sick.items()}
             self.injuries = {k: False if v else v for k, v in self.injuries.items()}
 
@@ -162,12 +168,15 @@ class Agent:
                     self.location = location
                     self.location.people_arrived(self)
                     print(
-                        f'{self.name} se movio hacia, {self.location.name} y en el {self.time.get_global_time()} segundo desde {previus_location.name}\n')
+                        f'{self.name} se movio de {self.location.name} y en el {self.time.get_global_time()} segundo desde {previus_location.name}\n')
+                    self.history.append(
+                        f'{self.name} se movio de {self.location.name} y en el {self.time.get_global_time()} segundo desde {previus_location.name}')
                     break
             if "rob" in self.location.get_state() and not (isinstance(self, Criminal)):
                 if isinstance(self, Officer or Detective):
                     print(
-                        f'{self.name} detecto un robo')  # si un oficial o un detective llega aun lugar y estan robando
+                        f'{self.name} detecto un robo')# si un oficial o un detective llega aun lugar y estan robando
+                    self.history.append(f'{self.name}  esta en lugar robado en {self.location.name}y en {self.time.get_global_time()}')
                     people_in_rob = [x for x in location.people_around if 'rob_in_progress' in x.get_state()]
                     print(people_in_rob,
                           '-----------------------------------------------------------------------------')
@@ -178,25 +187,34 @@ class Agent:
                                 i.state['detenido'] = True
                                 i.state['rob_in_progress'] = False
                                 print(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos\n')
+                                self.history.append(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos')
                                 i.state['on_jail'] = True
                                 i.location = self.station
                                 self.station.jail.append(i)
                             elif not chance:
                                 print(f'{i.name} escapo')
+                    else:
+
+                        self.history.append(f'{self.name} llego tarde a {self.location.name} en {self.time.get_global_time()}')
 
                     # break
 
                 elif not self.location.state['wait_car']:
                     print('###informando robo por primera vez')
+                    self.history.append(f' informando robo por primera vez en {self.location.name} y en {self.time.get_global_time()}')
+
                     self.location.state['calm'] = False
                     self.location.state['wait_car'] = True
                     station_pol = self.nearest_place(self.locations['pd'][0])
                     if station_pol:
                         print(
                             f"Calling nearest {station_pol.name} en {self.time.get_global_time()} segundos por {self.name} desde {self.location.name}\n")
+                        self.history.append(f"Calling nearest {station_pol.name} en {self.time.get_global_time()} segundos por {self.name} desde {self.location.name}")
                         station_pol.send_patrol()
                     else:
                         print('no hay estacion de policia disponible')
+                        self.history.append('no hay estacion de policia disponible para solucionar robo')
+
                         self.location.state['rob'] = False
 
                     if self.location.state['on_fire']:
@@ -205,16 +223,19 @@ class Agent:
                         if station_fire:
                             print(
                                 f"Calling nearest {station_fire.name} en {self.time.get_global_time()} segundos por {self.name}\n")
+                            self.history.append(f"Calling nearest {station_fire.name} en {self.time.get_global_time()}  desde {self.location.name} segundos por {self.name}\n")
                             station_fire.send_fire_truck()
                         else:
                             print('no hay estacion de bomberos disponibles')
+                            self.history.append('no hay estacion de bomberos disponibles para apagar el fuego')
                             self.location.state['on_fire'] = False
                             print("el fuego se apago solo")
 
                     # print(station_pol.get_state())
                     # break
                 else:
-                    print(f"robo ya informado !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! en {self.location.name}")
+                    print(f"robo ya informado  en {self.location.name}")
+                    self.history.append(f" intento comunicar de robo ya informado  en {self.location.name}")
 
     def nearest_place(self, place):
         type_of = type(place)
@@ -234,6 +255,7 @@ class Agent:
     def move_to_random_location(self):
         new_location = r.choice(self.location.get_adjacent_locations())
         print(f"{self.name} se va a mover de {self.location.name} a {new_location.name}")
+        self.history.append(f'{self.name} dirige a {new_location.name}')
         self.move_to(new_location)
 
     def get_places(self, route):
@@ -254,6 +276,7 @@ class Agent:
 
     def go_to_store(self):
         store = self.nearest_place(self.locations['stores'][0])
+        self.history.append(f'{self.name} dirige a {store.name}')
         self.move_to(store)
         store.buy(self)
         self.stay_in_place(5)
@@ -261,6 +284,7 @@ class Agent:
 
     def go_to_casino(self):
         casino: Casino = self.nearest_place(self.locations['casinos'][0])
+        self.history.append(f'{self.name} dirige a {casino.name}')
         self.move_to(casino)
         casino.play(self)
         self.stay_in_place(5)
@@ -268,13 +292,15 @@ class Agent:
 
 
 class Citizen(Agent):
-    def __call__(self, *args, **kwargs):
+    def __call__(self, time, *args, **kwargs):
         while True:
-            #self.stay_in_place(8)
+            if time <= self.time.get_global_time():
+                break
+            # self.stay_in_place(8)
             if self.get_injuries() != 'ninguna' or self.get_sick() != 'ninguna':
                 self.go_to_hospital()
             if self.home.cash > 400:
-                print(f'{self.name} esta depositando')
+                print(f'{self.name} va depositar')
                 self.go_bank_deposit()
             # if self.home.cash < 100:
             #     print(f'{self.name} esta extrayendo')
@@ -284,7 +310,7 @@ class Citizen(Agent):
             aux_mov = r.random()
             if aux_mov < 0.8:
                 self.move_to_random_location()
-            elif aux_mov < 0.9 and aux_mov >= 0.8:
+            elif 0.9 > aux_mov >= 0.8:
                 self.go_to_casino()
             else:
                 self.go_to_store()
@@ -303,8 +329,10 @@ class Officer(Citizen):
         self.mastery = mastery
         self.station: PoliceDepartment = station
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, time, *args, **kwargs):
         while True:
+            if time <= self.time.get_global_time():
+                break
             aux_loc = None
             if 'go_to_rob' in self.get_state():
                 for i in self.all_locations:
@@ -313,10 +341,12 @@ class Officer(Citizen):
                         break
             if aux_loc:
                 self.call_of_dutty(aux_loc)
+                self.home.collect()
 
     def call_of_dutty(self, location, criminal=None):
-        print(f'Atendiendo crimen en {self.time.get_global_time()} en el lugar {location.name}')
-        if 'work' in self.get_state():  # quitar
+        print(f'va a atender crimen en {self.time.get_global_time()} en el lugar {location.name}')
+        self.history.append(f'va a atender crimen en {self.time.get_global_time()} en el lugar {location.name}')
+        if True:  # quitar
             self.move_to(location)
             if criminal and criminal in location.people_around:
                 print(f'apresar a {criminal.name}')
@@ -329,6 +359,8 @@ class Officer(Citizen):
                         i.state['detenido'] = True
                         i.state['rob_in_progress'] = False
                         print(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos\n')
+                        self.history.append(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos')
+
                         i.state['on_jail'] = True
                         i.location = self.station
                         self.station.jail.append(i)
@@ -347,18 +379,18 @@ class Officer(Citizen):
         self.state['enabled'] = True
 
     def criminal_chance(self, criminal):
-        # chance_c = criminal.mastery / 10
-        # chance_o = self.mastery / 10
-        # if chance_o >= chance_c:
-        #     is_success = r.random() - chance_c
-        #     if is_success >= 0.5:
-        #         return True
-        #     else:
-        #         return False
-        # else:
-        #     is_success = r.random() - chance_c
-        #     if is_success >= 0.5:
-        #         return False
+        chance_c = criminal.mastery / 10
+        chance_o = self.mastery / 10
+        if chance_o >= chance_c:
+            is_success = r.random() - chance_c
+            if is_success >= 0.5:
+                return True
+            else:
+                return False
+        else:
+            is_success = r.random() - chance_c
+            if is_success >= 0.5:
+                return False
         return True
 
 
@@ -367,9 +399,12 @@ class Fire_Fighter(Citizen):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.station = station
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self,time, *args, **kwargs):
+
         start_time = self.time.get_global_time()
         while True:
+            if time <= self.time.get_global_time():
+                break
             aux_loc = None
             if 'go_to_rob' in self.get_state():
                 for i in self.all_locations:
@@ -382,11 +417,13 @@ class Fire_Fighter(Citizen):
 
     def stop_fire(self, location):
         print(f'moviendose hacia fuego {self.time.get_global_time()}')
-
+        self.history.append(f'moviendose hacia fuego en {location.name} y en {self.time.get_global_time()}')
         self.move_to(location)
         self.stay_in_place(5)
         print('fuego apagado')
+        self.history.append(f'se apago fuego en {location.name} y en {self.time.get_global_time()}')
         location.state['on_fire'] = False
+
         self.move_to(self.station)
         self.state['go_to_rob'] = False
         self.station.state['enabled'] = True
@@ -404,16 +441,20 @@ class Detective(Citizen):
 
 class Employee(Citizen):
     ##Se podria agregar un parametro de percepcion para que un empleado pueda adelantarse a un robo
-    def __call__(self, *args, **kwargs):
-        aux_random = r.random()
-        print(aux_random)
-        if aux_random < 0.85:
-            self.go_work()
-        else:
-            aux_random2 = r.randint(0, len(self.sick) - 2)
-            self.sick['ninguna'] = False
-            self.sick[list(self.sick.keys())[aux_random2]] = True
-            self.go_to_hospital()
+    def __call__(self,time, *args, **kwargs):
+
+        while True:
+            if time <= self.time.get_global_time():
+                break
+            aux_random = r.random()
+            print(aux_random)
+            if aux_random < 0.85:
+                self.go_work()
+            else:
+                aux_random2 = r.randint(0, len(self.sick) - 2)
+                self.sick['ninguna'] = False
+                self.sick[list(self.sick.keys())[aux_random2]] = True
+                self.go_to_hospital()
 
     def __init__(self, id, name, location, work_place: Location, time, city, all_locations, house):
         super().__init__(id, name, location, time, city, all_locations, house)
@@ -428,10 +469,13 @@ class Employee(Citizen):
 
     def go_work(self):
         self.stay_in_place(20 - self.walk_time)
+        self.history.append(f'se dirige a trabajar a {self.hired_in.name} en {self.time.get_global_time()}')
         self.move_to(self.hired_in)
         print('llego a trabajar')
+        self.history.append(f'se llego al trabajo  {self.hired_in.name} en {self.time.get_global_time()}')
         self.stay_in_place(50)
         print('termino de trabajar')
+        self.history.append(f'se fue del trabajo {self.hired_in.name} en {self.time.get_global_time()}')
         self.home.collect()
         self.go_home()
 
@@ -440,8 +484,10 @@ class Employee(Citizen):
 
 
 class Criminal(Agent):
-    def __call__(self, *args, **kwargs):
+    def __call__(self,time, *args, **kwargs):
         while True:
+            if time <= self.time.get_global_time():
+                break
             if 'on_jail' in self.get_state():
                 print(f'{self.name} Presooooo!!!!!!!!!!!!!! esperando-------------------------------------------------')
                 self.stay_in_place(20)
@@ -514,6 +560,7 @@ class Criminal(Agent):
             self.location.state['rob'] = True
             is_success = r.random() * (1 + self.mastery / 10)
             print(f"Robando {self.location.name} por {self.name}\n")
+            self.history.append(f"Robando {self.location.name} por {self.name} en {self.time.get_global_time()}")
             hurt_someone = r.random()
             while True:
                 end_time = self.time.get_global_time()
@@ -522,19 +569,20 @@ class Criminal(Agent):
                     if hurt_someone >= 0.0000001:  ## Modificar esta probabilidad luego
                         if len(self.people_on_sight) > 0:
                             person = r.choice(self.people_on_sight)
-                            print(f'Se le va a meter la tiza a {person.name} --------------------------------------------')
-                            # if person == self:
-                            #     break
-                            # injure = r.choice(list(self.injuries.keys()))
-                            injure = 'quemadura'
-                            if injure == 'quemadura':
-                                self.location.state['on_fire'] = True
-                            person.injuries[injure] = True
-                            person.injuries['ninguna'] = False
+                            print(
+                                f'Se le va a meter la tiza a {person.name} --------------------------------------------')
+                            if person != self:
+                                injure = r.choice(list(self.injuries.keys()))
+                                if injure == 'quemadura':
+                                    self.location.state['on_fire'] = True
+                                self.history.append(f'hirio a {person.name} en {self.time.get_global_time()} de {injure}')
+                                person.injuries[injure] = True
+                                person.injuries['ninguna'] = False
                             # print(person.get_injuries())
                     break
             if 'detenido' in self.get_state():
                 print(f'{self.name} ha sido apresado\n')
+                self.history.append(f'{self.name} ha sido apresado en {self.time.get_global_time()}')
                 return
 
             if is_success < chances:
@@ -542,9 +590,11 @@ class Criminal(Agent):
                 self.home.cash += stolen_cash
                 self.location.cash -= stolen_cash
                 print(f'Dinero robado {stolen_cash} por {self.name}')
+                self.history.append(f'Dinero robado {stolen_cash} por {self.name} en {self.location.name} y en {self.time.get_global_time()}')
                 self.mastery += 1
             else:
                 print(f'robo fallido en {self.location.name} en {self.time.get_global_time()} segundos\n')
+                self.history.append(f'robo fallido en {self.location.name} en {self.time.get_global_time()} segundos')
                 self.mastery += 0.2
         else:
             print(f'posbilidad de robo muy baja en {self.location.name}\n')
