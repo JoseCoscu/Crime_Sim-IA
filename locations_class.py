@@ -16,7 +16,7 @@ class Location:
         self.cash = cash
         self.state = {'calm': True, 'rob': False, 'on_fire': False, 'is_open': False, 'investigate': False,
                       "send_car": False,
-                      "wait_car": False, 'enabled': True,'in_fire':False}
+                      "wait_car": False, 'enabled': True, 'in_fire': False}
 
     def set_state(self, *args):
         for i in self.state:
@@ -44,7 +44,10 @@ class Location:
         self.people_around.append(people)
 
     def people_left(self, people):
-        self.people_around.remove(people)
+        try:
+            self.people_around.remove(people)
+        except:
+            pass
 
     def collect(self):
         self.cash += 100  # Aumentar el dinero de la casa
@@ -88,7 +91,6 @@ class FireDepartment(Location):
         super().__init__(name, id)
         self.fire_fighters = fire_fighters
         self.trucks = trucks
-        
 
     def send_fire_truck(self, fire_fighters, truck, water, location):
         ## Aki solo cambiar el estado de la estacion
@@ -127,7 +129,6 @@ class Hospital(Location):
     ##hacer sistema experto para hospital y cobrar_diagnosticar
     ##hacer herencia de localidades publicas a hospitales polica y fire_dep
 
-
     def collect(self, doctor):
         doctor.home.cash += 100
         return
@@ -147,9 +148,9 @@ class Store(Location):
 
     def buy(self, agent):
         print(f"{agent.home.cash}-{self.cash}")
-        expense=int(r.random()*100)
+        expense = int(r.random() * 100)
         agent.home.cash -= expense
-        self.cash+= expense
+        self.cash += expense
         print(f"{agent.home.cash}-{self.cash}")
 
     def collect(self, store_clerk):
@@ -211,18 +212,19 @@ class Casino(Location):
     def collect(self, store_clerk):
         store_clerk.home.cash += 100
         return
-    
-    def play(self,agent):
-        aux_bet=r.random()
-        print(f"{agent.home.cash}-{self.cash}")
 
-        if(aux_bet<0.4):
-            agent.home.cash+=100
-            self.cash-=100
+    def play(self, agent):
+        aux_bet = r.random()
+        print(f"{agent.name} va a apostar")
+
+        if (aux_bet < 0.4):
+            agent.home.cash += 100
+            self.cash -= 100
+            print(f"{agent.name} Gano!!!!!")
         else:
-            agent.home.cash-=100
-            self.cash+=100
-        print(f"{agent.home.cash}-{self.cash}")
+            agent.home.cash -= 100
+            self.cash += 100
+        print(f"{agent.name} Perdioooo!!!!!!!!")
 
 
 def create_map(locations):
