@@ -171,6 +171,11 @@ class Agent:
                     people_in_rob = [x for x in location.people_around if 'rob_in_progress' in x.get_state()]
                     print(people_in_rob,
                           '-----------------------------------------------------------------------------')
+                    if (self.location.state['on_fire']):
+                        station_fire = self.nearest_place(self.locations['fd'][0])
+                        print(
+                            f"Calling nearest Fire Station en {self.time.get_global_time()} segundos por {self.name}\n")
+                        station_fire.send_fire_truck()
                     if len(people_in_rob) > 0:
                         for i in people_in_rob:
                             chance = self.criminal_chance(i)
@@ -191,10 +196,11 @@ class Agent:
                     print(
                         f"Calling nearest Police Station en {self.time.get_global_time()} segundos por {self.name} desde {self.location.name}\n")
                     station_pol.send_patrol()
-                    # if(self.location.state['on_fire']):
-                    #    station_fire = self.nearest_place(self.locations['fd'][0])
-                    #    print(f"Calling nearest Fire Station en {self.time.get_global_time()} segundos por {self.name}\n")
-                    #    station_fire.send_fire_truck()
+                    if (self.location.state['on_fire']):
+                        station_fire = self.nearest_place(self.locations['fd'][0])
+                        print(
+                            f"Calling nearest Fire Station en {self.time.get_global_time()} segundos por {self.name}\n")
+                        station_fire.send_fire_truck()
 
                     self.location.state['calm'] = False
                     self.location.state['wait_car'] = True
@@ -372,12 +378,11 @@ class Fire_Fighter(Citizen):
         self.move_to(location)
         self.stay_in_place(5)
         print('fuego apagado')
-        location.state['on_fire']=False
-        self.station['send_car']=False
+        location.state['on_fire'] = False
+        self.station['send_car'] = False
         self.move_to(self.station)
-        self.state['go_to_rob']=False
-        self.station.status['enabled']=True
-
+        self.state['go_to_rob'] = False
+        self.station.status['enabled'] = True
 
 
 class Detective(Citizen):
@@ -452,7 +457,7 @@ class Criminal(Agent):
         self.mastery = mastery
 
     def calculate_rob_time(self):
-        rob_time = 100
+        rob_time = 10
         ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
         if isinstance(self.location, House):
             rob_time *= 0.2  # Más fácil robar en una casa
@@ -507,16 +512,19 @@ class Criminal(Agent):
                 end_time = self.time.get_global_time()
                 elapse_time = end_time - start_time
                 if elapse_time >= rob_time:
-                    if hurt_someone >= 0.1:  ## Modificar esta probabilidad luego
-                        if len(self.people_on_sight) > 0:
-                            person = r.choice(self.people_on_sight)
-                            print(f'Se le va a meter la tiza a {person.name}')
-                            if person == self:
-                                break
-                            injure = r.choice(list(self.injuries.keys()))
-                            person.injuries[injure] = True
-                            person.injuries['ninguna'] = False
-                            # print(person.get_injuries())
+                    if hurt_someone >= 0.0000001:  ## Modificar esta probabilidad luego
+                        # if len(self.people_on_sight) > 0:
+                        person = r.choice(self.people_on_sight)
+                        print(f'Se le va a meter la tiza a {person.name} --------------------------------------------')
+                        # if person == self:
+                        #     break
+                        # injure = r.choice(list(self.injuries.keys()))
+                        injure = 'quemadura'
+                        if injure == 'quemadura':
+                            self.location.state['on_fire'] = True
+                        person.injuries[injure] = True
+                        person.injuries['ninguna'] = False
+                        # print(person.get_injuries())
                     break
             if 'detenido' in self.get_state():
                 print(f'{self.name} ha sido apresado\n')
@@ -536,4 +544,3 @@ class Criminal(Agent):
             self.move_to(self.all_locations[r.randint(0, 10)])
 
         # self.move_to(self.all_locations[r.randint(0, 10)])
-    

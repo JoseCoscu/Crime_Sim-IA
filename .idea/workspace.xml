@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c110bdbb-9229-4425-9488-b1658b20ef84" name="Changes" comment="def go_to_hospital">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_04_2024_3_03__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_21_04_2024_3_03__Changes_.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/agent_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/agent_class.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/locations_class.py" beforeDir="false" afterPath="$PROJECT_DIR$/locations_class.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/map.py" beforeDir="false" afterPath="$PROJECT_DIR$/map.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -44,7 +46,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "events-employ",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "D:/Escuela/4to/Crime_Sim-IA/map.py",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
@@ -145,7 +147,8 @@
     <MESSAGE value="def diag_hosp" />
     <MESSAGE value="modificando move random" />
     <MESSAGE value="def go_to_hospital" />
-    <option name="LAST_COMMIT_MESSAGE" value="def go_to_hospital" />
+    <MESSAGE value="Realizando pruebas" />
+    <option name="LAST_COMMIT_MESSAGE" value="Realizando pruebas" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -157,7 +160,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/agent_class.py</url>
-          <line>301</line>
+          <line>306</line>
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>

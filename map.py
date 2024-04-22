@@ -101,6 +101,7 @@ criminals = []
 citizens = []
 officers = []
 employee = []
+fire_fighters = []
 id = 1
 
 G = create_map(all_locations)
@@ -111,19 +112,28 @@ for i in range(0, 10):
     citizens.append(all_agents[-1])
     station = r.randint(0, len(police_departments) - 1)
     all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations, r.choice(houses),
+        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations,
+                r.choice(houses),
                 police_departments[station]))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
     all_agents.append(
-        Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations, r.choice(houses), 1))
+        Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
+                 r.choice(houses), 1))
     criminals.append(all_agents[-1])
     all_agents.append(
         Employee(id, 'Employee_' + str(i), r.choice(houses), stores[0], time_meter, G, all_locations, r.choice(houses)))
     employee.append(all_agents[-1])
+    all_agents.append(
+        Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_departments[0], time_meter, G, all_locations, r.choice(houses),
+                     r.choice(fire_departments)))
+    fire_fighters.append(all_agents[-1])
 
 for i in officers:
     police_departments[0].current_officers.append(i)
+
+for i in fire_fighters:
+    fire_departments[0].fire_fighters.append(i)
 
 
 # while (True):
@@ -157,6 +167,10 @@ def officers_threads(i):
     officers[i]()
 
 
+def fire_fighters_threads(i):
+    fire_fighters[i]()
+
+
 #
 t = []
 # # for i in range(0, 1):
@@ -180,11 +194,13 @@ for i in range(0, len(citizens)):
 for i in range(0, len(criminals)):
     t.append(threading.Thread(target=criminal_threads, args=(i,)))
 #
-# ## hilos de empleados
-# for i in range(0, len(employee)):
-#     t.append(threading.Thread(target=employee_threads, args=(i,)))
-#
+## hilos de empleados
+for i in range(0, len(employee)):
+    t.append(threading.Thread(target=employee_threads, args=(i,)))
 
+## hilo bomberos
+for i in range(0, len(fire_fighters)):
+    t.append(threading.Thread(target=fire_fighters_threads, args=(i,)))
 
 for i in t:
     i.start()
