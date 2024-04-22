@@ -106,10 +106,17 @@ id = 1
 
 G = create_map(all_locations)
 
-for i in range(0, 10):
-    house = r.choice(houses)
+for i in range(0, 5):
+    house = houses[2]
     all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
     citizens.append(all_agents[-1])
+
+
+
+for i in range(0, 5):
+    house = r.choice(houses)
+    # all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
+    # citizens.append(all_agents[-1])
     station = r.randint(0, len(police_departments) - 1)
     all_agents.append(
         Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations,
@@ -117,22 +124,37 @@ for i in range(0, 10):
                 police_departments[station]))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
-    all_agents.append(
-        Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
-                 r.choice(houses), 1))
-    criminals.append(all_agents[-1])
-    all_agents.append(
-        Employee(id, 'Employee_' + str(i), r.choice(houses), stores[0], time_meter, G, all_locations, r.choice(houses)))
-    employee.append(all_agents[-1])
+    # all_agents.append(
+    #     Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
+    #              r.choice(houses), 1))
+    # criminals.append(all_agents[-1])
+    # all_agents.append(
+    #     Employee(id, 'Employee_' + str(i), r.choice(houses), stores[0], time_meter, G, all_locations, r.choice(houses)))
+    # employee.append(all_agents[-1])
     all_agents.append(
         Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_departments[0], time_meter, G, all_locations, r.choice(houses),
                      r.choice(fire_departments)))
     fire_fighters.append(all_agents[-1])
 
+houses[2].set_state('on_fire','enabled','rob')
+houses[4].set_state('on_fire','enabled','rob')
+houses[6].set_state('on_fire','enabled','rob')
+houses[7].set_state('on_fire','enabled','rob')
+houses[9].set_state('on_fire','enabled','rob')
+houses[11].set_state('on_fire','enabled','rob')
+houses[12].set_state('on_fire','enabled','rob')
+houses[14].set_state('on_fire','enabled','rob')
+houses[15].set_state('on_fire','enabled','rob')
+
+
+print(houses[2].name)
+
+
 for i in officers:
     police_departments[0].current_officers.append(i)
 
 for i in fire_fighters:
+    # i.state['go_to_rob'] = True
     fire_departments[0].fire_fighters.append(i)
 
 
@@ -178,9 +200,9 @@ t = []
 # #     t[-1].start()
 #
 # Creamos un hilo para actualizar el tiempo
-time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
-time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
-time_updater_thread.start()
+# time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
+# time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
+# time_updater_thread.start()
 #
 # # hilos de oficiales
 for i in range(0, len(officers)):
@@ -201,6 +223,10 @@ for i in range(0, len(employee)):
 ## hilo bomberos
 for i in range(0, len(fire_fighters)):
     t.append(threading.Thread(target=fire_fighters_threads, args=(i,)))
+
+time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
+time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
+time_updater_thread.start()
 
 for i in t:
     i.start()
