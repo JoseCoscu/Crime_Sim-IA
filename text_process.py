@@ -1,31 +1,45 @@
 from openai import OpenAI
-
-
+import tkinter as tk
 import tkinter as tk
 
-texto_guardado = ""  # Variable global para almacenar el texto
+description = ""  # Variable global para almacenar el texto
+
 
 def guardar_texto():
-    global texto_guardado  # Acceder a la variable global
-    texto_guardado = entrada_texto.get()
-    print("Texto guardado:", texto_guardado)
+    global description  # Acceder a la variable global
+    description = entrada_texto.get("1.0", "end-1c")
     ventana.destroy()  # Cerrar la ventana después de guardar el texto
+
 
 # Crear la ventana
 ventana = tk.Tk()
-ventana.title("Introducir Texto")
+ventana.title("Descripción de Ciudad")
+
+# Ajustar el tamaño de la ventana
+ventana.geometry("500x300")
+
+# Introducción
+introduccion = "Por favor describa su ciudad lo más preciso y sencillo posible, agregue datos como:\n" \
+               "- Cantidad de habitantes\n" \
+               "- Cantidad de criminales\n" \
+               "- Cantidad de oficiales\n" \
+               "- Cantidad de bomberos\n" \
+               "- Cantidad de habitantes por casa\n\n" \
+               "- OJO: Modere la cantidad de ciudadanos dependiendo de los recursos de su sistema"
+
+# Etiqueta para la introducción
+etiqueta_intro = tk.Label(ventana, text=introduccion)
+etiqueta_intro.pack(pady=10)
 
 # Crear un campo de entrada de texto con marcador de posición
-entrada_texto = tk.Entry(ventana, width=50)
-entrada_texto.insert(0, "Introduzca la descripción de la ciudad")  # Texto de marcador de posición
+entrada_texto = tk.Text(ventana, width=50, height=5)
+entrada_texto.insert("1.0", "")  # Texto de marcador de posición
 entrada_texto.pack(pady=10)
 
 # Función para eliminar el marcador de posición cuando se hace clic en el campo de entrada
-def eliminar_placeholder(event):
-    if entrada_texto.get() == "Introduzca la descripción de la ciudad":
-        entrada_texto.delete(0, tk.END)
 
-entrada_texto.bind("<FocusIn>", eliminar_placeholder)
+
+entrada_texto.bind("<FocusIn>")
 
 # Botón para guardar el texto
 boton_guardar = tk.Button(ventana, text="Guardar Texto", command=guardar_texto)
@@ -35,38 +49,36 @@ boton_guardar.pack()
 ventana.mainloop()
 
 # Después de que se cierra la ventana, puedes acceder al texto guardado
-print("Texto guardado fuera de la ventana:", texto_guardado)
-
-
-
+print("Texto guardado fuera de:", description)
 
 # Point to the local server
 client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
 
-completion = client.chat.completions.create(
-    messages=[
-        {"role": "system",
-         "content": "Dada la siguiente descripcion de una ciudad, extrae los siguientes datos en forma de json"
-                    "habitantes:"
-                    "criminales:"
-                    "oficiales:"
-                    "bomberos:"
-                    "habitantes por casa:"
-                    "si los datos estan expresados en % haz la conversion"
-                    "y devuelveme un numero ademas no escribas nada mas solo devuelve el json generado"
-                    "si no hay mensaje devuelve valores por defecto pequenos enteros"},
-        {"role": "user",
-         "content": "   "
-
-         }
-    ],
-    model="text-davinci-002",  # Specify the model here
-    temperature=0.7,
-)
-
-# print(completion.choices[0].message.content)
+dic = {}
 
 while True:
+    print('Procesando......')
+    completion = client.chat.completions.create(
+        messages=[
+            {"role": "system",
+             "content": "Dada la siguiente descripcion de una ciudad, extrae los siguientes datos en forma de json"
+                        "habitantes:"
+                        "criminales:"
+                        "oficiales:"
+                        "bomberos:"
+                        "habitantes por casa:"
+                        "si no hay mensaje devuelve el json vacio,"
+                        "si faltan datos devuelve los datos que falten como 0"
+                        "escribe solo el json"},
+            {"role": "user",
+             "content": f"{description}"
+
+             }
+
+        ],
+        model="text-davinci-002",  # Specify the model here
+        temperature=0.7,
+    )
     try:
         dic = eval(completion.choices[0].message.content)
         if dic:
@@ -75,3 +87,8 @@ while True:
     except:
         continue
 
+habitantes = dic['habitantes']
+criminales = dic['criminales']
+oficiales = dic['oficiales']
+bomberos = dic['bomberos']
+hab_x_casa = dic['habitantes por casa']
