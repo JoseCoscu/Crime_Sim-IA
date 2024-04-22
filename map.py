@@ -3,8 +3,8 @@ from agent_class import *
 import random as r
 from graph import *
 import threading
-import time
 from timer import TimeMeter, time_updater
+from text_process import habitantes,oficiales,criminales,hab_x_casa,bomberos
 
 police_departments = []
 hospitals = []
