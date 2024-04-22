@@ -347,9 +347,11 @@ class Fire_Fighter(Citizen):
         self.stay_in_place(5)
         print('fuego apagado')
         location.state['on_fire']=False
+        self.station['send_car']=False
         self.move_to(self.station)
         self.state['go_to_rob']=False
-        
+        self.station.status['enabled']=True
+
 
 
 class Detective(Citizen):
@@ -499,3 +501,4 @@ class Criminal(Agent):
             self.move_to(self.all_locations[r.randint(0, 10)])
 
         # self.move_to(self.all_locations[r.randint(0, 10)])
+    

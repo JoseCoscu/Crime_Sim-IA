@@ -65,6 +65,18 @@ class PoliceDepartment(Location):
         for i in range(pol):
             pol_ran = r.choice(self.current_officers)
             pol_ran.set_state('work', 'go_to_rob')
+        self.calculate_enabled()
+
+
+    def calculate_enabled(self):
+        count=0
+        for i in self.current_officers:
+            if not i.state['go_to_rob']:
+                count+= 1
+        if count>=1:
+            self.state['enabled']=True
+        else:   
+            self.state['enabled']=False
 
     def collect(self, officer):
         officer.home.cash += 100
@@ -85,8 +97,18 @@ class FireDepartment(Location):
         for i in range(fire_man):
             pol_ran = r.choice(self.fire_fighters)
             pol_ran.set_state('go_to_rob')
+        self.calculate_enabled()
         
-            
+    def calculate_enabled(self):
+        count=0
+        for i in self.fire_fighters:
+            if not i.state['go_to_rob']:
+                count+= 1
+        if count>=1:
+            self.state['enabled']=True
+        else:   
+            self.state['enabled']=False
+
     def collect(self, fire_man):
         fire_man.home.cash += 100
         return
