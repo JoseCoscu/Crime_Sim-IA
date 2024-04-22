@@ -1,0 +1,4 @@
+networkx>=2.7
+matplotlib>=3.5.1
+experta<=1.9.6
+openai>=1.23.2
