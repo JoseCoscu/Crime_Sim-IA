@@ -268,9 +268,11 @@ class Agent:
 
 
 class Citizen(Agent):
-    def __call__(self, *args, **kwargs):
+    def __call__(self, time, *args, **kwargs):
         while True:
-            #self.stay_in_place(8)
+            if time <= self.time.get_global_time():
+                break
+            # self.stay_in_place(8)
             if self.get_injuries() != 'ninguna' or self.get_sick() != 'ninguna':
                 self.go_to_hospital()
             if self.home.cash > 400:
@@ -284,7 +286,7 @@ class Citizen(Agent):
             aux_mov = r.random()
             if aux_mov < 0.8:
                 self.move_to_random_location()
-            elif aux_mov < 0.9 and aux_mov >= 0.8:
+            elif 0.9 > aux_mov >= 0.8:
                 self.go_to_casino()
             else:
                 self.go_to_store()
@@ -302,6 +304,7 @@ class Officer(Citizen):
         self.vehicle = vehicle
         self.mastery = mastery
         self.station: PoliceDepartment = station
+        self.station.current_officers.append(self)
 
     def __call__(self, *args, **kwargs):
         while True:
@@ -363,9 +366,10 @@ class Officer(Citizen):
 
 
 class Fire_Fighter(Citizen):
-    def __init__(self, id, name, location, time, city, all_locations, house, station):
+    def __init__(self, id, name, location, time, city, all_locations, house, station: FireDepartment):
         super().__init__(id, name, location, time, city, all_locations, house)
         self.station = station
+        self.station.fire_fighters.append(self)
 
     def __call__(self, *args, **kwargs):
         start_time = self.time.get_global_time()
@@ -522,7 +526,8 @@ class Criminal(Agent):
                     if hurt_someone >= 0.0000001:  ## Modificar esta probabilidad luego
                         if len(self.people_on_sight) > 0:
                             person = r.choice(self.people_on_sight)
-                            print(f'Se le va a meter la tiza a {person.name} --------------------------------------------')
+                            print(
+                                f'Se le va a meter la tiza a {person.name} --------------------------------------------')
                             # if person == self:
                             #     break
                             # injure = r.choice(list(self.injuries.keys()))
