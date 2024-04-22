@@ -205,6 +205,8 @@ for i in range(0, len(fire_fighters)):
 for i in t:
     i.start()
 
+
+
 # criminals[0].try_robbery()
 # citizens[0]()
 
