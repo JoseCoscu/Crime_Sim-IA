@@ -64,23 +64,24 @@ class PoliceDepartment(Location):
     def send_patrol(self):
         ## Aki solo cambiar el estado de la estacion
         self.state['send_car'] = True
-        if len(self.current_officers)>=1:
+        print('*************************************************************', len(self.current_officers))
+        if len(self.current_officers) >= 1:
+
             pol = r.randint(1, len(self.current_officers))
             for i in range(pol):
                 pol_ran = r.choice(self.current_officers)
                 pol_ran.set_state('work', 'go_to_rob')
             self.calculate_enabled()
 
-
     def calculate_enabled(self):
-        count=0
+        count = 0
         for i in self.current_officers:
             if not i.state['go_to_rob']:
-                count+= 1
-        if count>=1:
-            self.state['enabled']=True
-        else:   
-            self.state['enabled']=False
+                count += 1
+        if count >= 1:
+            self.state['enabled'] = True
+        else:
+            self.state['enabled'] = False
 
     def collect(self, officer):
         officer.home.cash += 100
@@ -95,22 +96,22 @@ class FireDepartment(Location):
     def send_fire_truck(self):
         ## Aki solo cambiar el estado de la estacion
         print('llamando a estacion')
-        if len(self.fire_fighters)>=1:
+        if len(self.fire_fighters) >= 1:
             fire_man = r.randint(1, len(self.fire_fighters))
             for i in range(fire_man):
                 pol_ran = r.choice(self.fire_fighters)
                 pol_ran.set_state('go_to_rob')
             self.calculate_enabled()
-        
+
     def calculate_enabled(self):
-        count=0
+        count = 0
         for i in self.fire_fighters:
             if not i.state['go_to_rob']:
-                count+= 1
-        if count>=1:
-            self.state['enabled']=True
-        else:   
-            self.state['enabled']=False
+                count += 1
+        if count >= 1:
+            self.state['enabled'] = True
+        else:
+            self.state['enabled'] = False
 
     def collect(self, fire_man):
         fire_man.home.cash += 100

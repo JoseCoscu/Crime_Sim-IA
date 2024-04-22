@@ -144,25 +144,25 @@ for i in range(0, bomberos):
 
 def citizens_threads(i):
     citizens[i](100)
-    print(f'tiempo de {citizens[i].name} es {citizens[i].time.get_global_time()}')
+
 
 
 def criminal_threads(i):
-    criminals[i]()
-    print(f'tiempo de {criminals[i].name} es {criminals[i].time.get_global_time()}')
+    criminals[i](100)
+
 
 
 def employee_threads(i):
-    employee[i]()
-    print(f'tiempo de {employee[i].name} es {employee[i].time.get_global_time()}')
+    employee[i](100)
+
 
 
 def officers_threads(i):
-    officers[i]()
+    officers[i](100)
 
 
 def fire_fighters_threads(i):
-    fire_fighters[i]()
+    fire_fighters[i](100)
 
 
 #
@@ -171,30 +171,28 @@ t = []
 # #     t.append(threading.Thread(target=citizens_threads, args=(i,)))
 # #     t[-1].start()
 #
-# Creamos un hilo para actualizar el tiempo
-# time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
-# time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
-# time_updater_thread.start()
-#
+## hilo bomberos
+for i in range(0, len(fire_fighters)):
+    t.append(threading.Thread(target=fire_fighters_threads, args=(i,)))
+
 # # hilos de oficiales
 for i in range(0, len(officers)):
     t.append(threading.Thread(target=officers_threads, args=(i,)))
 
-### hilos de citizens
-for i in range(0, len(citizens)):
-    t.append(threading.Thread(target=citizens_threads, args=(i,)))
-#
 # ## hilos de criminales
 for i in range(0, len(criminals)):
     t.append(threading.Thread(target=criminal_threads, args=(i,)))
+#
+
+#
 #
 ## hilos de empleados
 for i in range(0, len(employee)):
     t.append(threading.Thread(target=employee_threads, args=(i,)))
 
-## hilo bomberos
-for i in range(0, len(fire_fighters)):
-    t.append(threading.Thread(target=fire_fighters_threads, args=(i,)))
+### hilos de citizens
+for i in range(0, len(citizens)):
+    t.append(threading.Thread(target=citizens_threads, args=(i,)))
 
 time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
 time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
@@ -202,8 +200,11 @@ time_updater_thread.start()
 
 for i in t:
     i.start()
+for i in t:
+    i.join()
 
-# criminals[0].try_robbery()
+for i in officers[0].history:
+    print(i)
 # citizens[0]()
 
 # show_locations(G)
