@@ -4,7 +4,7 @@ import random as r
 from graph import *
 import threading
 from timer import TimeMeter, time_updater
-#from text_process import habitantes,oficiales,criminales,hab_x_casa,bomberos
+from text_process import habitantes, oficiales, criminales, bomberos
 
 police_departments = []
 hospitals = []
@@ -103,71 +103,43 @@ officers = []
 employee = []
 fire_fighters = []
 id = 1
+ciudadanos = habitantes - criminales - bomberos - oficiales
 
 G = create_map(all_locations)
 
-for i in range(0, 5):
-    house = houses[2]
-    all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
-    citizens.append(all_agents[-1])
-
-
-
-for i in range(0, 5):
+for i in range(0, ciudadanos):
     house = r.choice(houses)
-    # all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
-    # citizens.append(all_agents[-1])
-    station = r.randint(0, len(police_departments) - 1)
+    store = r.choice(stores)
+    is_employee = r.randint(0, 1)
+    if is_employee:
+        all_agents.append(
+            Employee(id, 'Employee_' + str(i), r.choice(houses), store, time_meter, G, all_locations, house))
+        employee.append(all_agents[-1])
+    else:
+        all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
+        citizens.append(all_agents[-1])
+
+for i in range(0, criminales):
     all_agents.append(
-        Officer(id, 'Officer_' + str(i), police_departments[0], [], [], 10, time_meter, G, all_locations,
+        Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
+                 r.choice(houses), 1))
+    criminals.append(all_agents[-1])
+
+for i in range(0, oficiales):
+    station = r.choice(police_departments)
+    all_agents.append(
+        Officer(id, 'Officer_' + str(i), station, [], [], 10, time_meter, G, all_locations,
                 r.choice(houses),
-                police_departments[station]))
+                station))
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
-    # all_agents.append(
-    #     Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
-    #              r.choice(houses), 1))
-    # criminals.append(all_agents[-1])
-    # all_agents.append(
-    #     Employee(id, 'Employee_' + str(i), r.choice(houses), stores[0], time_meter, G, all_locations, r.choice(houses)))
-    # employee.append(all_agents[-1])
+
+for i in range(0, bomberos):
+    fire_d = r.choice(fire_departments)
     all_agents.append(
-        Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_departments[0], time_meter, G, all_locations, r.choice(houses),
-                     r.choice(fire_departments)))
+        Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_d, time_meter, G, all_locations, r.choice(houses),
+                     fire_d))
     fire_fighters.append(all_agents[-1])
-
-houses[2].set_state('on_fire','enabled','rob')
-houses[4].set_state('on_fire','enabled','rob')
-houses[6].set_state('on_fire','enabled','rob')
-houses[7].set_state('on_fire','enabled','rob')
-houses[9].set_state('on_fire','enabled','rob')
-houses[11].set_state('on_fire','enabled','rob')
-houses[12].set_state('on_fire','enabled','rob')
-houses[14].set_state('on_fire','enabled','rob')
-houses[15].set_state('on_fire','enabled','rob')
-
-
-print(houses[2].name)
-
-
-for i in officers:
-    police_departments[0].current_officers.append(i)
-
-for i in fire_fighters:
-    # i.state['go_to_rob'] = True
-    fire_departments[0].fire_fighters.append(i)
-
-
-# while (True):
-#     for i in all_agents:
-#         if isinstance(i, Citizen):
-#             i()
-#         if isinstance(i,Criminal):
-#             i()
-#
-#     time += 1
-#     if time >= 10:
-#         break
 
 
 def citizens_threads(i):
@@ -176,21 +148,21 @@ def citizens_threads(i):
 
 
 def criminal_threads(i):
-    criminals[i](100)
+    criminals[i]()
     print(f'tiempo de {criminals[i].name} es {criminals[i].time.get_global_time()}')
 
 
 def employee_threads(i):
-    employee[i](100)
+    employee[i]()
     print(f'tiempo de {employee[i].name} es {employee[i].time.get_global_time()}')
 
 
 def officers_threads(i):
-    officers[i](100)
+    officers[i]()
 
 
 def fire_fighters_threads(i):
-    fire_fighters[i](100)
+    fire_fighters[i]()
 
 
 #
@@ -231,10 +203,6 @@ time_updater_thread.start()
 for i in t:
     i.start()
 
-for i in t:
-    i.join()
-
-print(citizens[0].history)
 # criminals[0].try_robbery()
 # citizens[0]()
 

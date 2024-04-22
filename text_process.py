@@ -2,7 +2,7 @@ from openai import OpenAI
 import tkinter as tk
 
 description = ""  # Variable global para almacenar el texto
-default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10, 'habitantes por casa': 5}
+default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10}
 
 
 def guardar_texto():
@@ -116,8 +116,5 @@ try:
     bomberos = dic['bomberos'] if dic['bomberos'] != 0 else default_dic['bomberos']
 except:
     bomberos = default_dic['bomberos']
-try:
-    hab_x_casa = dic['habitantes por casa'] if dic['habitantes por casa'] != 0 else default_dic['habitantes por casa']
-except:
-    hab_x_casa = default_dic['habitantes por casa']
+
 
