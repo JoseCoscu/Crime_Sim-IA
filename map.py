@@ -6,7 +6,7 @@ import random as r
 from graph import *
 import threading
 from timer import TimeMeter, time_updater
-from text_process import habitantes, oficiales, criminales, bomberos
+from text_process import habitantes, oficiales, criminales, bomberos, indice_agresividad, indice_crim
 
 police_departments = []
 hospitals = []
@@ -105,30 +105,42 @@ officers = []
 employee = []
 fire_fighters = []
 id = 1
-# ciudadanos = habitantes - criminales - bomberos - oficiales -10
-ciudadanos = 20
-criminales = 10
-oficiales = 10
-indice_criminalidad = 0.4
-indice_agresividad = 0.001
+ciudadanos = habitantes - criminales - bomberos - oficiales
+empleados = int(ciudadanos / 2)
+ciudadanos = int(ciudadanos / 2)
+
+if indice_agresividad == 'Alto':
+    indice_agresividad = 0.2
+if indice_agresividad == 'Medio':
+    indice_agresividad = 0.5
+if indice_agresividad == 'Bajo':
+    indice_agresividad = 0.8
+
+if indice_crim == 'Alto':
+    indice_crim = 0.2
+if indice_crim == 'Medio':
+    indice_crim = 0.5
+if indice_crim == 'Bajo':
+    indice_crim = 0.8
+
 G = create_map(all_locations)
+
+for i in range(0, empleados):
+    house = r.choice(houses)
+    store = r.choice(stores)
+    all_agents.append(
+        Employee(id, 'Employee_' + str(i), r.choice(houses), store, time_meter, G, all_locations, house))
+    employee.append(all_agents[-1])
 
 for i in range(0, ciudadanos):
     house = r.choice(houses)
-    # store = r.choice(stores)
-    # is_employee = r.randint(0, 1)
-    # if is_employee:
-    #     all_agents.append(
-    #         Employee(id, 'Employee_' + str(i), r.choice(houses), store, time_meter, G, all_locations, house))
-    #     employee.append(all_agents[-1])
-    # else:
     all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
     citizens.append(all_agents[-1])
 
 for i in range(0, criminales):
     all_agents.append(
         Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
-                 r.choice(houses), indice_criminalidad, indice_agresividad, 1))
+                 r.choice(houses), indice_crim, indice_agresividad, 1))
     criminals.append(all_agents[-1])
 
 for i in range(0, oficiales):
@@ -140,33 +152,32 @@ for i in range(0, oficiales):
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
 
-
-# for i in range(0, bomberos):
-#     fire_d = r.choice(fire_departments)
-#     all_agents.append(
-#         Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_d, time_meter, G, all_locations, r.choice(houses),
-#                      fire_d))
-#     fire_fighters.append(all_agents[-1])
+for i in range(0, bomberos):
+    fire_d = r.choice(fire_departments)
+    all_agents.append(
+        Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_d, time_meter, G, all_locations, r.choice(houses),
+                     fire_d))
+    fire_fighters.append(all_agents[-1])
 
 
 def citizens_threads(i):
-    citizens[i](50)
+    citizens[i](100)
 
 
 def criminal_threads(i):
-    criminals[i](50)
+    criminals[i](100)
 
 
 def employee_threads(i):
-    employee[i](50)
+    employee[i](100)
 
 
 def officers_threads(i):
-    officers[i](50)
+    officers[i](100)
 
 
 def fire_fighters_threads(i):
-    fire_fighters[i](50)
+    fire_fighters[i](100)
 
 
 #
@@ -186,10 +197,7 @@ for i in range(0, len(officers)):
 # ## hilos de criminales
 for i in range(0, len(criminals)):
     t.append(threading.Thread(target=criminal_threads, args=(i,)))
-#
 
-#
-#
 ## hilos de empleados
 for i in range(0, len(employee)):
     t.append(threading.Thread(target=employee_threads, args=(i,)))
@@ -219,21 +227,30 @@ while i < len(t):
 for i in list(d.keys()):
     i.join()
 
-print(f"Informacion sobre {criminals[0].name} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+print(
+    f"Informacion sobre {criminals[0].name} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 for i in criminals[0].history:
     print(i)
 
-# cant_robs = 0
-# cant_heridos = 0
-# cant_rob_atendidos = 0
-# cant_apresados = 0
-# cant_dinero_rob = 0
-# cant_rob_report = 0
-# cant_incendios = 0
-# cant_incendios_att = 0
+cant_robs = 0
+cant_heridos = 0
+cant_rob_atendidos = 0
+cant_apresados = 0
+cant_dinero_rob = 0
+cant_rob_report = 0
+cant_incendios = 0
+cant_incendios_att = 0
 
+for i in all_agents:
+    cant_robs += i.cant_rob
+    cant_heridos += i.cant_heridos
+    cant_apresados += i.cant_apresados
+    cant_dinero_rob += i.cant_dinero_rob
+    cant_incendios += i.cant_incendios
+    cant_rob_report += i.cant_rob_report
 print(f'Cant Robos:{cant_robs}\nCant heridos: {cant_heridos}\nCant Incendios:{cant_incendios}\n'
-      f'Cant Dinero Robado: {cant_dinero_rob}\nCant Criminales Capturados: {cant_apresados}\n')
+      f'Cant Dinero Robado: {cant_dinero_rob}\nCant Criminales Capturados: {cant_apresados}\n'
+      f'Cant Rob Report: {cant_rob_report}')
 # print(all_agents[0].history)
 # for i in officers[0].history:
 #     print(i)

@@ -2,7 +2,8 @@ from openai import OpenAI
 import tkinter as tk
 
 description = ""  # Variable global para almacenar el texto
-default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10}
+default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10, 'indice_criminalidad': 'Medio',
+               'indice_agresividad': 'Medio'}
 
 
 def guardar_texto():
@@ -60,7 +61,7 @@ def procesate_text(description):
     dic = {}
     i = 1
     while True:
-        if i>=3:
+        if i >= 4:
             return default_dic
         print(f'Procesando......{i}')
         completion = client.chat.completions.create(
@@ -71,9 +72,11 @@ def procesate_text(description):
                             "criminales:"
                             "oficiales:"
                             "bomberos:"
+                            "indice_criminalidad:"
                             "indice_agresiviad:"
                             "si no hay mensaje devuelve el json vacio,"
-                            # "la agresividad que tenga solo uno de estos valores  Alto, Medio o Bajo"
+                            "el indice de criminalidad que tenga solo uno de estos valores  Alto, Medio o Bajo"
+                            "la indide de agresividad que tenga solo uno de estos valores  Alto, Medio o Bajo"
                             "la indice agresividad lo pones en Alto, Medio o Bajo"
                             "si faltan datos devuelve los datos que falten como 0"
                             "escribe solo el json y nada mas no hagas ningun comentario"},
@@ -83,7 +86,7 @@ def procesate_text(description):
                  }
 
             ],
-            model="text-davinci-002",  # Specify the model here
+            model="LLaMA v2",  # Specify the model here
             temperature=0.7,
         )
         try:
@@ -119,4 +122,12 @@ try:
 except:
     bomberos = default_dic['bomberos']
 
+try:
+    indice_crim = dic['indice_criminalidad'] if dic['bomberos'] != 0 else default_dic['indice_criminalidad']
+except:
+    indice_crim = default_dic['indice_criminalidad']
 
+try:
+    indice_agresividad = dic['indice_agresividad'] if dic['indice_agresividad'] != 0 else default_dic['indice_agresividad']
+except:
+    indice_agresividad = default_dic['indice_agresividad']
