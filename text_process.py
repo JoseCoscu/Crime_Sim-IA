@@ -26,7 +26,7 @@ introduccion = "Por favor describa su ciudad lo más preciso y sencillo posible,
                "- Cantidad de criminales\n" \
                "- Cantidad de oficiales\n" \
                "- Cantidad de bomberos\n" \
-               "- Cantidad de habitantes por casa\n\n" \
+               "- Agresividad de los criminales(Alto, Medio, Bajo)\n\n" \
                "- OJO: Modere la cantidad de ciudadanos dependiendo de los recursos de su sistema"
 
 # Etiqueta para la introducción
@@ -71,10 +71,12 @@ def procesate_text(description):
                             "criminales:"
                             "oficiales:"
                             "bomberos:"
-                            "habitantes por casa:"
+                            "indice_agresiviad:"
                             "si no hay mensaje devuelve el json vacio,"
+                            # "la agresividad que tenga solo uno de estos valores  Alto, Medio o Bajo"
+                            "la indice agresividad lo pones en Alto, Medio o Bajo"
                             "si faltan datos devuelve los datos que falten como 0"
-                            "escribe solo el json"},
+                            "escribe solo el json y nada mas no hagas ningun comentario"},
                 {"role": "user",
                  "content": f"{description}"
 

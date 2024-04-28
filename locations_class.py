@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import random as r
 import hospital_exp as h
 
+cant_rob_atendidos = 0
+cant_incendios_att = 0
+
 
 class Location:
 
@@ -64,7 +67,6 @@ class PoliceDepartment(Location):
     def send_patrol(self):
         ## Aki solo cambiar el estado de la estacion
         self.state['send_car'] = True
-        print('*************************************************************', len(self.current_officers))
         if len(self.current_officers) >= 1:
 
             pol = r.randint(1, len(self.current_officers))
@@ -72,6 +74,8 @@ class PoliceDepartment(Location):
                 pol_ran = r.choice(self.current_officers)
                 pol_ran.set_state('work', 'go_to_rob')
             self.calculate_enabled()
+            global cant_rob_atendidos
+            cant_rob_atendidos += 1
 
     def calculate_enabled(self):
         count = 0
@@ -102,7 +106,8 @@ class FireDepartment(Location):
                 pol_ran = r.choice(self.fire_fighters)
                 pol_ran.set_state('go_to_rob')
             self.calculate_enabled()
-
+        global cant_incendios_att
+        cant_incendios_att += 1
     def calculate_enabled(self):
         count = 0
         for i in self.fire_fighters:

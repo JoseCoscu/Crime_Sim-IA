@@ -1,3 +1,5 @@
+import random
+
 from locations_class import *
 from agent_class import *
 import random as r
@@ -103,26 +105,30 @@ officers = []
 employee = []
 fire_fighters = []
 id = 1
-ciudadanos = habitantes - criminales - bomberos - oficiales
-
+# ciudadanos = habitantes - criminales - bomberos - oficiales -10
+ciudadanos = 20
+criminales = 10
+oficiales = 10
+indice_criminalidad = 0.4
+indice_agresividad = 0.001
 G = create_map(all_locations)
 
 for i in range(0, ciudadanos):
     house = r.choice(houses)
-    store = r.choice(stores)
-    is_employee = r.randint(0, 1)
-    if is_employee:
-        all_agents.append(
-            Employee(id, 'Employee_' + str(i), r.choice(houses), store, time_meter, G, all_locations, house))
-        employee.append(all_agents[-1])
-    else:
-        all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
-        citizens.append(all_agents[-1])
+    # store = r.choice(stores)
+    # is_employee = r.randint(0, 1)
+    # if is_employee:
+    #     all_agents.append(
+    #         Employee(id, 'Employee_' + str(i), r.choice(houses), store, time_meter, G, all_locations, house))
+    #     employee.append(all_agents[-1])
+    # else:
+    all_agents.append(Citizen(id, 'Citizen_' + str(i), house, time_meter, G, all_locations, house))
+    citizens.append(all_agents[-1])
 
 for i in range(0, criminales):
     all_agents.append(
         Criminal(id, 'Criminal_' + str(i), r.choice(all_locations), [], [], time_meter, G, all_locations,
-                 r.choice(houses), 1))
+                 r.choice(houses), indice_criminalidad, indice_agresividad, 1))
     criminals.append(all_agents[-1])
 
 for i in range(0, oficiales):
@@ -134,35 +140,33 @@ for i in range(0, oficiales):
     officers.append(all_agents[-1])
     officers[-1].state['work'] = True
 
-for i in range(0, bomberos):
-    fire_d = r.choice(fire_departments)
-    all_agents.append(
-        Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_d, time_meter, G, all_locations, r.choice(houses),
-                     fire_d))
-    fire_fighters.append(all_agents[-1])
+
+# for i in range(0, bomberos):
+#     fire_d = r.choice(fire_departments)
+#     all_agents.append(
+#         Fire_Fighter(id, 'Fire_Fighter_' + str(i), fire_d, time_meter, G, all_locations, r.choice(houses),
+#                      fire_d))
+#     fire_fighters.append(all_agents[-1])
 
 
 def citizens_threads(i):
-    citizens[i](100)
-
+    citizens[i](50)
 
 
 def criminal_threads(i):
-    criminals[i](100)
-
+    criminals[i](50)
 
 
 def employee_threads(i):
-    employee[i](100)
-
+    employee[i](50)
 
 
 def officers_threads(i):
-    officers[i](100)
+    officers[i](50)
 
 
 def fire_fighters_threads(i):
-    fire_fighters[i](100)
+    fire_fighters[i](50)
 
 
 #
@@ -197,14 +201,42 @@ for i in range(0, len(citizens)):
 time_updater_thread = threading.Thread(target=time_updater, args=(time_meter,))
 time_updater_thread.daemon = True  # El hilo se detendrá cuando el programa principal termine
 time_updater_thread.start()
+th = [False for x in t]
+d = {}
+for i in t:
+    d[i] = False
 
-for i in t:
-    i.start()
-for i in t:
+i = 0
+while i < len(t):
+    threads = [x for x in list(d.keys()) if not d[x]]
+    m = random.choice(threads)
+    m.start()
+    d[m] = True
+    i += 1
+
+# for i in t:
+#     i.start()
+for i in list(d.keys()):
     i.join()
 
-for i in officers[0].history:
+print(f"Informacion sobre {criminals[0].name} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+for i in criminals[0].history:
     print(i)
+
+# cant_robs = 0
+# cant_heridos = 0
+# cant_rob_atendidos = 0
+# cant_apresados = 0
+# cant_dinero_rob = 0
+# cant_rob_report = 0
+# cant_incendios = 0
+# cant_incendios_att = 0
+
+print(f'Cant Robos:{cant_robs}\nCant heridos: {cant_heridos}\nCant Incendios:{cant_incendios}\n'
+      f'Cant Dinero Robado: {cant_dinero_rob}\nCant Criminales Capturados: {cant_apresados}\n')
+# print(all_agents[0].history)
+# for i in officers[0].history:
+#     print(i)
 # citizens[0]()
 
 # show_locations(G)

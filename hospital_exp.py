@@ -108,6 +108,8 @@ def diag_hosp(herida, enfermedad):
     stay=identificador.result[0]
     local_time=identificador.result[1]
     medicate=identificador.result[2]
+    print(herida, enfermedad)
+    print('111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111')
     print(stay,local_time,medicate)
     return stay,local_time,medicate
 
