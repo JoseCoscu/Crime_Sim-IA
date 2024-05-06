@@ -8,7 +8,6 @@ class Diagnostic(Fact):
 
 
 class Hospital_Diagnostic(KnowledgeEngine):
-    """posibles enfermedades: virus,inflamacion,mental,ninguna posibles heridas: laceracion, quemadura,punzon,golpe,ninguna"""
 
     def __init__(self):
         super().__init__()
@@ -18,7 +17,6 @@ class Hospital_Diagnostic(KnowledgeEngine):
     @Rule(Diagnostic(herida="laceracion", enfermedad="virus"))
     def lac_virus(self):
         self.result = (True, 15, 'antibioticos')
-
     @Rule(Diagnostic(herida="laceracion", enfermedad="inflamacion"))
     def lac_infl(self):
         self.result = (True, 10, 'antinflamatorios')

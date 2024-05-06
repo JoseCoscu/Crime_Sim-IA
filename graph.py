@@ -25,18 +25,7 @@ def calcular_costo_camino(camino, grafo):
 
 
 def a_estrella(grafo, nodo_inicial, nodo_objetivo):
-    """
-    Encuentra el camino más corto entre el nodo inicial y el nodo objetivo en un grafo utilizando el algoritmo A*.
-
-    Parameters:
-        grafo (nx.Graph): El grafo en el que se realiza la búsqueda.
-        nodo_inicial: El nodo inicial.
-        nodo_objetivo: El nodo objetivo.
-
-    Returns:
-        list: El camino más corto desde el nodo inicial hasta el nodo objetivo.
-    """
-    lista_abierta = [(0, nodo_inicial.name)]  # Tuplas de la forma (f, nodo)
+    lista_abierta = [(0, nodo_inicial.name)]
     heapq.heapify(lista_abierta)
     padres = {}
     g_score = {nodo_inicial.name: 0}
