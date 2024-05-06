@@ -67,10 +67,10 @@ class PoliceDepartment(Location):
     def send_patrol(self):
         ## Aki solo cambiar el estado de la estacion
         self.state['send_car'] = True
-        if len(self.current_officers) >= 1:
+        if len(self.current_officers) >= 3:
 
-            pol = r.randint(1, len(self.current_officers))
-            for i in range(pol):
+            # pol = r.randint(1, len(self.current_officers))
+            for i in range(3):
                 pol_ran = r.choice(self.current_officers)
                 pol_ran.set_state('work', 'go_to_rob')
             self.calculate_enabled()
@@ -100,9 +100,9 @@ class FireDepartment(Location):
     def send_fire_truck(self):
         ## Aki solo cambiar el estado de la estacion
         print('llamando a estacion')
-        if len(self.fire_fighters) >= 1:
-            fire_man = r.randint(1, len(self.fire_fighters))
-            for i in range(fire_man):
+        if len(self.fire_fighters) >= 2:
+            # fire_man = r.randint(1, len(self.fire_fighters))
+            for i in range(2):
                 pol_ran = r.choice(self.fire_fighters)
                 pol_ran.set_state('go_to_rob')
             self.calculate_enabled()

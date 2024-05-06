@@ -6,7 +6,10 @@ import random as r
 from graph import *
 import threading
 from timer import TimeMeter, time_updater
-from text_process import habitantes, oficiales, criminales, bomberos, indice_agresividad, indice_crim
+#from text_process import habitantes, oficiales, criminales, bomberos, indice_agresividad, indice_crim
+
+
+
 
 police_departments = []
 hospitals = []
@@ -105,6 +108,13 @@ officers = []
 employee = []
 fire_fighters = []
 id = 1
+habitantes=30
+criminales=8
+bomberos=3
+oficiales=7
+indice_agresividad='Alto'
+indice_crim='Alto'
+
 ciudadanos = habitantes - criminales - bomberos - oficiales
 empleados = int(ciudadanos / 2)
 ciudadanos = int(ciudadanos / 2)
