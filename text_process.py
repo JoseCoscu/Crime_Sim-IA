@@ -2,7 +2,7 @@ from openai import OpenAI
 import tkinter as tk
 
 description = ""  # Variable global para almacenar el texto
-default_dic = {'habitantes': 100, 'criminales': 10, 'oficiales': 10, 'bomberos': 10, 'indice_criminalidad': 'Medio',
+default_dic = {'habitantes': 150, 'criminales': 10, 'oficiales': 20, 'bomberos': 10, 'indice_criminalidad': 'Medio',
                'indice_agresividad': 'Medio'}
 
 

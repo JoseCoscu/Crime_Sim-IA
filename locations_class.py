@@ -72,6 +72,7 @@ class PoliceDepartment(Location):
             # pol = r.randint(1, len(self.current_officers))
             for i in range(3):
                 pol_ran = r.choice(self.current_officers)
+
                 pol_ran.set_state('work', 'go_to_rob')
             self.calculate_enabled()
             global cant_rob_atendidos
@@ -108,6 +109,7 @@ class FireDepartment(Location):
             self.calculate_enabled()
         global cant_incendios_att
         cant_incendios_att += 1
+
     def calculate_enabled(self):
         count = 0
         for i in self.fire_fighters:

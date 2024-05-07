@@ -186,7 +186,7 @@ class Agent:
             start_time = self.time.get_global_time()
             times = self.estimate_arrival_time(location)
             if isinstance(self, Officer):
-                times /= 2
+                times /= 4
             while True:
                 end_time = self.time.get_global_time()  # Registro del tiempo de finalización
                 elapsed_time = end_time - start_time  # Cálculo del tiempo transcurrido
@@ -213,6 +213,7 @@ class Agent:
                             chance = self.criminal_chance(i)
                             if chance and not i.state['detenido']:
                                 i.state['detenido'] = True
+                                self.cant_apresados += 1
                                 i.state['rob_in_progress'] = False
                                 print(f'{self.name} atrapo a {i.name} en {self.time.get_global_time()} segundos\n')
                                 self.history.append(
@@ -369,8 +370,8 @@ class Officer(Citizen):
     def call_of_dutty(self, location, criminal=None):
         print(f'{self.name} va a atender crimen en {self.time.get_global_time()} en el lugar {location.name}')
         self.history.append(f'va a atender crimen en {self.time.get_global_time()} en el lugar {location.name}')
-        if True:  # quitar
-            self.move_to(location)
+
+        self.move_to(location)
 
         location.state['calm'] = True
         location.state['wait_car'] = False
@@ -500,18 +501,23 @@ class Criminal(Agent):
         self.gang = []
         self.boss = False
         self.state['on_command'] = False
+        self.state['waiting_gang'] = False
 
     def __call__(self, time, *args, **kwargs):
         while True:
             if time <= self.time.get_global_time():
                 if self.boss:
-                    self.boss.gang.remove(self)
+                    try:
+                        self.boss.gang.remove(self)
+                        self.state['on_command'] = False
+                    except:
+                        pass
                 break
             if 'on_jail' in self.get_state():
                 station_pol: PoliceDepartment = self.nearest_place(self.locations['pd'][0])
                 self.move_to(station_pol)
                 station_pol.jail.append(self)
-                self.cant_apresados += 1
+
                 print(f'{self.name} Presooooo!!!!!!!!!!!!!! esperando-------------------------------------------------')
                 self.stay_in_place(20)
                 self.location.jail.remove(self)
@@ -530,8 +536,8 @@ class Criminal(Agent):
                 continue
             if isinstance(self.location, Hospital):
                 continue
-            if self.gang:
-                self.try_robbery_with_band()
+
+            self.try_robbery_with_band()
 
     def move_to(self, new_location: Location):
         super().move_to(new_location)
@@ -541,16 +547,14 @@ class Criminal(Agent):
 
         criminals = [x for x in self.location.people_around if isinstance(x, Criminal)]
         for c in criminals:
-            if (c.mastery <= self.mastery and not c.boss) or (c.boss and c.boss.mastery < self.mastery):
+            if (c.mastery < self.mastery and not c.boss) or (c.boss and c.boss.mastery < self.mastery):
                 if c == self: continue
                 self.gang.append(c)
                 c.boss = self
                 print(f"{self.name} recluto {c.name}-----!!!!!!!!!!!!--------!!!!!!!!!!!!-------------!!!!!!!!!!!!!")
 
     def calculate_rob_time(self, band=False):
-        rob_time = 30
-        if band:
-            rob_time /= 2
+        rob_time = 200
         ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
         if isinstance(self.location, House):
             rob_time *= 0.2  # Más fácil robar en una casa
@@ -596,19 +600,32 @@ class Criminal(Agent):
             i.state['on_command'] = True
 
         while not full_gang:  # Esperar por los muchachos
-            if not self.gang: full_gang = True
+            if not self.gang:
+                self.try_robbery(False)
+                break
             print('Esperando los muchachos')
+            self.state['waiting_gang'] = True
             for i in self.gang:
-                print(i.name)
+                print('jefe: ', self.name, self.mastery)
+                print('tiempo: ', self.time.get_global_time())
+                print(i.mastery)
+                print(i.name, ' ', i.mastery)
                 print(i.state)
                 if 'on_jail' in i.get_state():
                     self.gang.remove(i)
             for i in self.gang:
+                if 'waiting_gang' in i.get_state():
+                    continue
                 if not i in self.location.people_around:
                     break
                 full_gang = True
+                self.state['waiting_gang'] = False
 
-        self.try_robbery(True)
+            if len(self.gang) > 0:
+
+                self.try_robbery(True)
+            else:
+                self.try_robbery(False)
 
     def try_robbery(self, band=False):
         if self.location == self.home:
@@ -618,7 +635,6 @@ class Criminal(Agent):
         rob_time = self.calculate_rob_time()  ## Arreglar tiempo de robo
         if band:
             chances += 0.5
-            rob_time /= 2
         if chances >= self.criminalidad and 'calm' in self.location.get_state():
             start_time = self.time.get_global_time()
             self.state['rob_in_progress'] = True
@@ -660,6 +676,10 @@ class Criminal(Agent):
                     break
             if 'detenido' in self.get_state():
                 self.state['rob_in_progress'] = False
+                if band:
+                    for i in self.gang:
+                        i.state['rob_in_progress'] = False
+                        i.state['on_command'] = False
                 print(f'{self.name} ha sido apresado\n')
                 self.history.append(f'{self.name} ha sido apresado en {self.time.get_global_time()}')
                 return
