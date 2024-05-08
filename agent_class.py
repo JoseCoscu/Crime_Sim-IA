@@ -479,7 +479,7 @@ class Employee(Citizen):
         self.history.append(f'se dirige a trabajar a {self.hired_in.name} en {self.time.get_global_time()}')
         self.move_to(self.hired_in)
         self.history.append(f'se llego al trabajo  {self.hired_in.name} en {self.time.get_global_time()}')
-        self.stay_in_place(50)
+        self.stay_in_place(30)
         self.history.append(f'se fue del trabajo {self.hired_in.name} en {self.time.get_global_time()}')
         self.home.collect()
         self.go_home()
@@ -554,16 +554,16 @@ class Criminal(Agent):
                 print(f"{self.name} recluto {c.name}-----!!!!!!!!!!!!--------!!!!!!!!!!!!-------------!!!!!!!!!!!!!")
 
     def calculate_rob_time(self, band=False):
-        rob_time = 200
+        rob_time = 80
         ## Aumentar o disminuir el tiempo del robo dependiendo del lugar
         if isinstance(self.location, House):
-            rob_time *= 0.2  # Más fácil robar en una casa
+            rob_time *= 0.5  # Más fácil robar en una casa
         elif isinstance(self.location, Store) or isinstance(self.location, GasStation):
-            rob_time *= 0.3  # Relativamente más fácil robar en una tienda
+            rob_time *= 0.4  # Relativamente más fácil robar en una tienda
         elif isinstance(self.location, PoliceDepartment):
             rob_time *= 3  # Muy dificil robar en la estacion de Policia
         elif isinstance(self.location, Bank) or isinstance(self.location, Casino):
-            rob_time *= 2  # Dificil de robar un banco o Casono
+            rob_time *= 1  # Dificil de robar un banco o Casono
 
         return rob_time
 

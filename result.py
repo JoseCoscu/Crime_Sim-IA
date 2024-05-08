@@ -1,31 +1,52 @@
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-# # Datos para el gráfico
-# categorias = ['A', 'B', 'C', 'D']
-# valores = [15, 24, 12, 10]
-# colores = ['blue', 'green', 'red', 'yellow']
-
-# # Crear el gráfico de barras con colores personalizados
-# plt.bar(categorias, valores, color=colores)
-
-# # Personalizar el gráfico
-# plt.title('Gráfico de barras')
-# plt.xlabel('Categorías')
-# plt.ylabel('Valores')
-
-# # Mostrar el gráfico
-# plt.show()
+# Datos para el gráfico
 
 import pandas as pd
 import statsmodels.api as sm
 
-def guardar_datos():
+def graf_pastel():
+    valores = [30, 20, 25, 10, 15]
+    etiquetas = ['A', 'B', 'C', 'D', 'E']
+
+    fig, ax = plt.subplots()
+    ax.pie(valores, labels=etiquetas)
+    ax.set_title('Gráfico de Pastel')
+
+    plt.show()
+def graficar():
+    categorias = ['A', 'B', 'C', 'D']
+    valores = [15, 24, 12, 10]
+    colores = ['blue', 'green', 'red', 'yellow']
+
+    # Crear el gráfico de barras con colores personalizados
+    plt.bar(categorias, valores, color=colores)
+
+    # Personalizar el gráfico
+    plt.title('Gráfico de barras')
+    plt.xlabel('Categorías')
+    plt.ylabel('Valores')
+
+    # Mostrar el gráfico
+    plt.show()
+
+
+def crear_tabla():
     # Crear un diccionario con tus datos
     data = {
-        'cant_a': [10, 12, 8, 15],
-        'cant_b': [8, 6, 9, 7],
-        'cant_c': [15, 18, 12, 10],
-        'x': [25.2, 27.5, 22.1, 24.8]
+        'cuid': [],
+        'empl': [],
+        'crim': [],
+        'bomb': [],
+        'ofic': [],
+        'ind_agre': [],
+        'ind_crim': [],
+        'robos': [],
+        'herd': [],
+        'incen': [],
+        'crim_cap': [],
+        'robos_rep': [],
+        'robos_att': [],
     }
 
     # Crear el DataFrame a partir del diccionario
@@ -34,13 +55,12 @@ def guardar_datos():
     # Guardar el DataFrame en un archivo CSV
     df.to_csv('datos.csv', index=False)
     datos=pd.read_csv('datos.csv')
-    x=datos[['cant_a']]
-    print(x)
 
-def Reg_lin_mult():
+
+def Reg_lin_mult(cuid,empl,crim,bomb,ofic,ind_agre,ind_crim,var_dep):
     datos = pd.read_csv('datos.csv')
-    X = datos[['cant_a', 'cant_b', 'cant_c']]
-    y = datos['x']
+    X = datos[[cuid,crim,bomb,ofic,ind_agre,ind_crim]]
+    y = datos[var_dep]
 
     # add const de datos de entrada
     X = sm.add_constant(X)
@@ -52,7 +72,27 @@ def Reg_lin_mult():
 
     # imprimir resultados
     print(modelo.summary())
+def add_data(cuid,empl,crim,bomb,ofic,ind_agre,ind_crim,robos,herd,incen,crim_cap,robos_rep,robos_att):
+    datos = pd.read_csv('datos.csv')
+    print(datos)
+    new_data = {
+        'cuid': [cuid],
+        'empl': [empl],
+        'crim': [crim],
+        'bomb': [bomb],
+        'ofic': [ofic],
+        'ind_agre': [ind_agre],
+        'ind_crim': [ind_crim],
+        'robos': [robos],
+        'herd': [herd],
+        'incen': [incen],
+        'crim_cap': [crim_cap],
+        'robos_rep': [robos_rep],
+        'robos_att': [robos_att]
+    }
+    df = pd.DataFrame(new_data)
+    datos = datos._append(df, ignore_index=True)
+    datos.to_csv('datos.csv', index=False)
+    datos=pd.read_csv('datos.csv')
 
-
-#guardar_datos()
-Reg_lin_mult()
+# Reg_lin_mult(cuid='cuid',empl='empl',crim='crim',bomb='bomb',ofic='ofic',ind_agre='ind_agre',ind_crim='ind_crim',var_dep='crim_cap')
