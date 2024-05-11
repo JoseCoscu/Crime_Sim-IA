@@ -15,13 +15,17 @@ cant_incendios_att = 0
 
 
 class Agent:
+
     def __init__(self, id, name, location: Location, time: TimeMeter, city, all_locations, house: Location):
+
+        self.injuries_count = 0
         self.cant_apresados = 0
         self.cant_rob_report = 0
         self.cant_rob = 0
         self.cant_heridos = 0
         self.cant_incendios = 0
         self.cant_dinero_rob = 0
+        self.data = []
         self.id = id
         self.name = name
         self.location = location
@@ -319,6 +323,15 @@ class Citizen(Agent):
         while True:
             if time <= self.time.get_global_time():
                 break
+
+            if self.injuries_count >= 2:
+                is_criminal = [True, False]
+                choise = r.choice(is_criminal)
+                data = [self.injuries_count, self.cant_apresados, self.cant_rob_report, self.cant_rob, self.cant_heridos,
+                     self.cant_incendios, self.cant_dinero_rob]
+
+                return choise, data
+
             # self.stay_in_place(8)
             if self.get_injuries() != 'ninguna' or self.get_sick() != 'ninguna':
                 self.go_to_hospital()
@@ -357,6 +370,12 @@ class Officer(Citizen):
         while True:
             if time <= self.time.get_global_time():
                 break
+            if self.injuries_count >= 2:
+                is_criminal = [True, False]
+                choise = r.choice(is_criminal)
+
+                return choise, self
+
             aux_loc = None
             if 'go_to_rob' in self.get_state():
                 for i in self.all_locations:
@@ -454,6 +473,12 @@ class Employee(Citizen):
         while True:
             if time <= self.time.get_global_time():
                 break
+            if self.injuries_count >= 2:
+                is_criminal = [True, False]
+                choise = r.choice(is_criminal)
+
+                return choise, self
+
             aux_random = r.random()
             if aux_random < 0.8:
                 self.go_work()
@@ -672,6 +697,7 @@ class Criminal(Agent):
                                     f'hirio a {person.name} en {self.time.get_global_time()} de {injure}')
                                 person.injuries[injure] = True
                                 person.injuries['ninguna'] = False
+                                person.injuries_count += 1
                             # print(person.get_injuries())
                     break
             if 'detenido' in self.get_state():
